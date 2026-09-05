@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏠 AI Homeowner Assistant · MVP</title>
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+    body { background: #f4f7fb; padding: 24px; max-width: 1300px; margin: 0 auto; }
+    .app { display: flex; flex-direction: column; gap: 24px; }
+    /* header */
+    .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .logo { display: flex; align-items: center; gap: 8px; font-size: 1.8rem; font-weight: 700; color: #1e293b; }
+    .logo i { color: #3b82f6; }
+    .badge { background: #dbeafe; color: #1e4b8a; padding: 6px 14px; border-radius: 40px; font-size: 0.85rem; font-weight: 600; }
+    .user-area { display: flex; align-items: center; gap: 16px; }
+    .btn { background: white; border: 1px solid #d1d5db; padding: 8px 18px; border-radius: 40px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+    .btn-primary { background: #3b82f6; border: none; color: white; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-outline { background: transparent; border: 1px solid #cbd5e1; }
+    .btn-outline:hover { background: #f1f5f9; }
+
+    /* grid */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+    .card { background: white; border-radius: 24px; padding: 20px 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05); transition: 0.1s; border: 1px solid #edf2f7; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .card-header h3 { font-size: 1.1rem; font-weight: 600; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+    .card-header i { color: #3b82f6; width: 20px; }
+    .value { font-size: 1.8rem; font-weight: 700; color: #0f172a; }
+    .sub { color: #475569; font-size: 0.9rem; }
+
+    .row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+    .row:last-child { border-bottom: none; }
+    .label { color: #475569; }
+    .highlight { font-weight: 600; color: #0f172a; }
+
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 40px; font-size: 0.8rem; font-weight: 500; }
+    .status-red { background: #fee2e2; color: #991b1b; }
+    .status-yellow { background: #fef9c3; color: #854d0e; }
+    .status-green { background: #dcfce7; color: #166534; }
+    .status-blue { background: #dbeafe; color: #1e4b8a; }
+
+    .rec-list { list-style: none; }
+    .rec-list li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+    .rec-list li:last-child { border-bottom: none; }
+    .rec-num { background: #eef2ff; color: #3b82f6; width: 28px; height: 28px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
+
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .mt-2 { margin-top: 12px; }
+    .gap-2 { gap: 8px; }
+
+    .plan-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+    .plan-pill { background: #f8fafc; border-radius: 40px; padding: 6px 18px; font-size: 0.85rem; border: 1px solid #e2e8f0; }
+
+    .input-group { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+    .input-group input { flex: 1; min-width: 140px; padding: 10px 14px; border-radius: 40px; border: 1px solid #d1d5db; background: white; }
+    .input-group button { padding: 10px 20px; border-radius: 40px; border: none; background: #3b82f6; color: white; font-weight: 600; cursor: pointer; }
+    .input-group button:hover { background: #2563eb; }
+
+    .toast { background: #0f172a; color: white; padding: 12px 20px; border-radius: 60px; display: inline-block; }
+    .footer-note { margin-top: 30px; font-size: 0.85rem; color: #64748b; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 24px; }
+    .inline-icon { margin-right: 6px; }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <!-- header -->
+  <div class="header">
+    <div class="logo"><i class="fas fa-home"></i> HomeAssistant <span class="badge">MVP</span></div>
+    <div class="user-area">
+      <span class="badge" style="background:#e2e8f0; color:#1e293b;"><i class="fas fa-user"></i> John's House</span>
+      <button class="btn btn-outline" id="resetDemoBtn"><i class="fas fa-sync-alt"></i> Reset demo</button>
+    </div>
+  </div>
+
+  <!-- main grid -->
+  <div class="grid">
+    <!-- left column -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      <!-- home profile card -->
+      <div class="card">
+        <div class="card-header"><h3><i class="fas fa-info-circle"></i> Home Profile</h3> <span class="status-badge status-green"><i class="fas fa-check-circle"></i> Active</span></div>
+        <div class="row"><span class="label">📍 Location</span><span class="highlight" id="locationDisplay">Texas</span></div>
+        <div class="row"><span class="label">🏡 Home value</span><span class="highlight" id="valueDisplay">$450,000</span></div>
+        <div class="row"><span class="label">📆 Mortgage / mo</span><span class="highlight" id="mortgageDisplay">$2,400</span></div>
+        <div class="row"><span class="label">🛡️ Insurance / mo</span><span class="highlight" id="insuranceDisplay">$180</span></div>
+        <div class="row"><span class="label">📊 Monthly home cost</span><span class="highlight" id="monthlyCostDisplay">$3,120</span></div>
+        <div class="row"><span class="label">🏡 Home health</span><span class="highlight" id="healthDisplay">82/100 <i class="fas fa-heartbeat" style="color:#22c55e;"></i></span></div>
+        <div class="input-group" style="margin-top: 14px;">
+          <input type="text" id="locationInput" placeholder="Location" value="Texas">
+          <input type="number" id="valueInput" placeholder="Value" value="450000">
+          <input type="number" id="mortgageInput" placeholder="Mortgage" value="2400">
+          <input type="number" id="insuranceInput" placeholder="Insurance" value="180">
+          <button id="updateProfileBtn"><i class="fas fa-save"></i> Update</button>
+        </div>
+      </div>
+
+      <!-- maintenance calendar card -->
+      <div class="card">
+        <div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Maintenance Calendar</h3> <span class="status-badge status-blue">Upcoming</span></div>
+        <div class="row"><span class="label">🔴 Due soon</span><span class="highlight">Home insurance renewal in 12 days</span></div>
+        <div class="row"><span class="label">🟡 Maintenance</span><span class="highlight">HVAC service recommended</span></div>
+        <div class="row"><span class="label">📅 Upcoming</span><span class="highlight">Property tax payment (Dec 15)</span></div>
+        <div class="row"><span class="label">💡 Tip</span><span class="highlight">Set aside $180 for annual maintenance</span></div>
+        <div style="margin-top:12px;"><span class="status-badge status-yellow"><i class="fas fa-clock"></i> Next: HVAC filter check (due in 5 days)</span></div>
+      </div>
+
+      <!-- reminders card -->
+      <div class="card">
+        <div class="card-header"><h3><i class="fas fa-bell"></i> Reminders</h3> <span class="status-badge status-red">2 urgent</span></div>
+        <div class="row"><span class="label"><i class="fas fa-file-signature" style="color:#3b82f6;"></i> Insurance renewal</span><span class="highlight">Dec 12, 2026</span></div>
+        <div class="row"><span class="label"><i class="fas fa-tools" style="color:#eab308;"></i> HVAC service</span><span class="highlight">Recommended this month</span></div>
+        <div class="row"><span class="label"><i class="fas fa-hand-holding-usd" style="color:#22c55e;"></i> Mortgage review</span><span class="highlight">Rate check: 6.2%</span></div>
+      </div>
+    </div>
+
+    <!-- right column -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      <!-- killer feature: What should I do this month? -->
+      <div class="card" style="background: linear-gradient(145deg, #f0f7ff, #ffffff); border-left: 5px solid #3b82f6;">
+        <div class="card-header"><h3><i class="fas fa-lightbulb" style="color:#eab308;"></i> ⭐ What should I do this month?</h3> <span class="badge" style="background:#3b82f6; color:white;">AI plan</span></div>
+        <ul class="rec-list" id="recommendationList">
+          <li><span class="rec-num">1</span> Check HVAC filter</li>
+          <li><span class="rec-num">2</span> Compare insurance renewal</li>
+          <li><span class="rec-num">3</span> Clean gutters</li>
+          <li><span class="rec-num">4</span> Review mortgage rate</li>
+          <li><span class="rec-num">5</span> Set aside $180 for annual maintenance</li>
+        </ul>
+        <div style="margin-top: 12px; background: #eef2ff; padding: 10px 16px; border-radius: 40px; display: inline-block; font-size:0.9rem;"><i class="fas fa-robot" style="color:#3b82f6;"></i> AI generated based on your profile</div>
+      </div>
+
+      <!-- savings opportunities & cost tracking -->
+      <div class="card">
+        <div class="card-header"><h3><i class="fas fa-piggy-bank"></i> Savings & Costs</h3> <span class="status-badge status-green">$400/yr</span></div>
+        <div class="row"><span class="label">💰 Save</span><span class="highlight" style="color:#16a34a;">Switching insurance may save ~$400/year</span></div>
+        <div class="row"><span class="label">📊 Total monthly</span><span class="highlight" id="monthlyCostDisplay2">$3,120</span></div>
+        <div class="row"><span class="label">📈 Home value trend</span><span class="highlight"><i class="fas fa-arrow-up" style="color:#22c55e;"></i> +3.2% YoY</span></div>
+        <div class="row"><span class="label">🏷️ Document analysis</span><span class="highlight">🔍 Insurance policy (expires Dec 12)</span></div>
+      </div>
+
+      <!-- paid plans -->
+      <div class="card">
+        <div class="card-header"><h3><i class="fas fa-crown"></i> Plans</h3> <span class="badge" style="background:#f1f5f9;">Current: Free</span></div>
+        <div class="plan-grid">
+          <span class="plan-pill"><i class="fas fa-check-circle" style="color:#22c55e;"></i> Free · Basic dashboard</span>
+          <span class="plan-pill"><i class="fas fa-star" style="color:#eab308;"></i> $9/mo · AI recs + cost tracking</span>
+          <span class="plan-pill"><i class="fas fa-gem" style="color:#3b82f6;"></i> $19/mo · Savings + document analysis</span>
+        </div>
+        <div style="margin-top: 12px; background: #f8fafc; padding: 12px 16px; border-radius: 20px; font-size:0.9rem;">
+          <i class="fas fa-arrow-right" style="color:#3b82f6;"></i> Upgrade to get AI savings opportunities & annual report
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- supabase status & footer -->
+  <div class="footer-note" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+    <span><i class="fas fa-database"></i> Supabase connected · <span id="dbStatus" style="color:#22c55e;">✅ live</span></span>
+    <span><i class="fab fa-github"></i> GitHub ready · <span style="color:#3b82f6;">code pushed</span></span>
+    <span><i class="fas fa-home"></i> MVP: Profile → Expenses → Calendar → AI → Reminders</span>
+  </div>
+</div>
+
+<script>
+  // ---------- SUPABASE CONFIG ----------
+  const supabaseUrl = 'https://your-project.supabase.co'; // REPLACE with your URL
+  const supabaseKey = 'your-anon-key'; // REPLACE with your anon key
+  // For demo we'll use localStorage as fallback if supabase is not configured
+  const useSupabase = false; // set to true when you have credentials
+
+  // Initialize supabase client (dummy if not configured)
+  let supabase = null;
+  if (useSupabase && supabaseUrl.includes('your-project') === false) {
+    supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+  }
+
+  // ---------- STATE ----------
+  let profile = {
+    location: 'Texas',
+    value: 450000,
+    mortgage: 2400,
+    insurance: 180,
+    health: 82
+  };
+
+  // ---------- DOM refs ----------
+  const locationDisplay = document.getElementById('locationDisplay');
+  const valueDisplay = document.getElementById('valueDisplay');
+  const mortgageDisplay = document.getElementById('mortgageDisplay');
+  const insuranceDisplay = document.getElementById('insuranceDisplay');
+  const monthlyCostDisplay = document.getElementById('monthlyCostDisplay');
+  const monthlyCostDisplay2 = document.getElementById('monthlyCostDisplay2');
+  const healthDisplay = document.getElementById('healthDisplay');
+
+  const locationInput = document.getElementById('locationInput');
+  const valueInput = document.getElementById('valueInput');
+  const mortgageInput = document.getElementById('mortgageInput');
+  const insuranceInput = document.getElementById('insuranceInput');
+
+  const updateBtn = document.getElementById('updateProfileBtn');
+  const resetBtn = document.getElementById('resetDemoBtn');
+
+  // recommendations list
+  const recList = document.getElementById('recommendationList');
+
+  // ---------- RENDER UI ----------
+  function renderProfile() {
+    const monthly = profile.mortgage + profile.insurance;
+    locationDisplay.textContent = profile.location;
+    valueDisplay.textContent = `$${profile.value.toLocaleString()}`;
+    mortgageDisplay.textContent = `$${profile.mortgage.toLocaleString()}`;
+    insuranceDisplay.textContent = `$${profile.insurance.toLocaleString()}`;
+    monthlyCostDisplay.textContent = `$${monthly.toLocaleString()}`;
+    monthlyCostDisplay2.textContent = `$${monthly.toLocaleString()}`;
+    healthDisplay.innerHTML = `${profile.health}/100 <i class="fas fa-heartbeat" style="color:#22c55e;"></i>`;
+
+    // update inputs to match
+    locationInput.value = profile.location;
+    valueInput.value = profile.value;
+    mortgageInput.value = profile.mortgage;
+    insuranceInput.value = profile.insurance;
+  }
+
+  // update recommendations based on profile (simple AI logic)
+  function updateRecommendations() {
+    const recs = [
+      'Check HVAC filter',
+      'Compare insurance renewal',
+      'Clean gutters',
+      'Review mortgage rate',
+      'Set aside $180 for annual maintenance'
+    ];
+    // dynamic: if insurance > 200, add insurance saving tip
+    if (profile.insurance > 200) {
+      recs.splice(1, 0, 'Shop for cheaper insurance');
+    }
+    // if mortgage > 2500, add refi tip
+    if (profile.mortgage > 2500) {
+      recs.splice(3, 0, 'Consider mortgage refinance');
+    }
+    // limit to 5 items
+    while (recs.length > 5) recs.pop();
+
+    recList.innerHTML = recs.map((text, idx) => 
+      `<li><span class="rec-num">${idx+1}</span> ${text}</li>`
+    ).join('');
+  }
+
+  // ---------- SAVE TO SUPABASE (if configured) ----------
+  async function saveProfileToSupabase() {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase
+        .from('home_profiles')  // table name
+        .upsert({ id: 1, ...profile }, { onConflict: 'id' });
+      if (error) console.warn('Supabase save error:', error);
+      else console.log('✅ Profile saved to Supabase');
+    } catch (e) { console.warn('Supabase not available'); }
+  }
+
+  // load from supabase
+  async function loadProfileFromSupabase() {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase
+        .from('home_profiles')
+        .select('*')
+        .eq('id', 1)
+        .single();
+      if (error) throw error;
+      if (data) {
+        profile.location = data.location || 'Texas';
+        profile.value = data.value || 450000;
+        profile.mortgage = data.mortgage || 2400;
+        profile.insurance = data.insurance || 180;
+        profile.health = data.health || 82;
+        renderProfile();
+        updateRecommendations();
+      }
+    } catch (e) { console.log('Supabase load skipped, using localStorage'); }
+  }
+
+  // ---------- LOCAL STORAGE FALLBACK ----------
+  function saveToLocal() {
+    localStorage.setItem('homeProfile', JSON.stringify(profile));
+  }
+  function loadFromLocal() {
+    const stored = localStorage.getItem('homeProfile');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        profile = { ...profile, ...parsed };
+        renderProfile();
+        updateRecommendations();
+      } catch(e) {}
+    }
+  }
+
+  // ---------- UPDATE PROFILE ----------
+  function updateProfile() {
+    const loc = locationInput.value.trim() || 'Texas';
+    const val = parseFloat(valueInput.value) || 450000;
+    const mort = parseFloat(mortgageInput.value) || 2400;
+    const ins = parseFloat(insuranceInput.value) || 180;
+    profile.location = loc;
+    profile.value = val;
+    profile.mortgage = mort;
+    profile.insurance = ins;
+    // health changes slightly based on inputs (fun)
+    profile.health = Math.min(100, Math.round(80 + (val - 300000)/50000 + (ins < 200 ? 3 : 0)));
+    renderProfile();
+    updateRecommendations();
+    saveToLocal();
+    if (supabase) saveProfileToSupabase();
+    // show toast feedback
+    const btn = updateBtn;
+    const orig = btn.textContent;
+    btn.textContent = '✅ Saved!';
+    setTimeout(() => btn.textContent = orig, 1500);
+  }
+
+  // ---------- RESET DEMO ----------
+  function resetDemo() {
+    profile = {
+      location: 'Texas',
+      value: 450000,
+      mortgage: 2400,
+      insurance: 180,
+      health: 82
+    };
+    renderProfile();
+    updateRecommendations();
+    saveToLocal();
+    if (supabase) saveProfileToSupabase();
+    const btn = resetBtn;
+    btn.textContent = '✅ Reset';
+    setTimeout(() => btn.textContent = 'Reset demo', 1200);
+  }
+
+  // ---------- INIT ----------
+  function init() {
+    // load from local first
+    loadFromLocal();
+    // then try supabase (if configured, it will override)
+    if (supabase) {
+      loadProfileFromSupabase().then(() => {
+        renderProfile();
+        updateRecommendations();
+      });
+    }
+    // set up event listeners
+    updateBtn.addEventListener('click', updateProfile);
+    resetBtn.addEventListener('click', resetDemo);
+
+    // update on enter key in inputs
+    document.querySelectorAll('#locationInput, #valueInput, #mortgageInput, #insuranceInput').forEach(inp => {
+      inp.addEventListener('keypress', (e) => { if (e.key === 'Enter') updateProfile(); });
+    });
+
+    // show supabase status
+    const dbStatus = document.getElementById('dbStatus');
+    if (supabase) {
+      dbStatus.textContent = '✅ connected (supabase)';
+      dbStatus.style.color = '#22c55e';
+    } else {
+      dbStatus.textContent = '⚡ local storage (supabase not configured)';
+      dbStatus.style.color = '#eab308';
+    }
+    // initial render
+    renderProfile();
+    updateRecommendations();
+  }
+
+  // run
+  init();
+</script>
+
+<!-- note: replace supabase credentials in script above for full functionality -->
+</body>
+</html>
