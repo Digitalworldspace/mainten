@@ -1,386 +1,838 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🏠 AI Homeowner Assistant · MVP</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🏠 AI Homeowner Assistant · Admin + Client</title>
   <!-- Supabase JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
+  </script>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Google Font (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-    body { background: #f4f7fb; padding: 24px; max-width: 1300px; margin: 0 auto; }
-    .app { display: flex; flex-direction: column; gap: 24px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #f6f9fc 0%, #eef2f7 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* ---------- AUTH CARD (login) ---------- */
+    .auth-container {
+      width: 100%;
+      max-width: 480px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-radius: 48px;
+      padding: 40px 36px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.5);
+      transition: 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0b1e33;
+      margin-bottom: 8px;
+    }
+    .auth-logo i {
+      color: #3b82f6;
+      background: #dbeafe;
+      padding: 10px;
+      border-radius: 20px;
+    }
+    .auth-sub {
+      color: #475569;
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+      border-left: 4px solid #3b82f6;
+      padding-left: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      color: #1e293b;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 40px;
+      border: 1.5px solid #e2e8f0;
+      background: white;
+      font-size: 1rem;
+      transition: 0.15s;
+      outline: none;
+    }
+    .form-group input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    }
+    .auth-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 60px;
+      border: none;
+      background: #0b1e33;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.15s;
+      margin-top: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    .auth-btn:hover {
+      background: #1e3a5f;
+      transform: scale(0.98);
+    }
+    .auth-btn i {
+      font-size: 1.1rem;
+    }
+    .auth-error {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 12px 18px;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      margin-top: 14px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .auth-error.show {
+      display: flex;
+    }
+    .auth-role-badge {
+      display: inline-block;
+      background: #e2e8f0;
+      padding: 4px 16px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1e293b;
+      letter-spacing: 0.3px;
+    }
+    .auth-extra {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+    .auth-extra span {
+      color: #3b82f6;
+      font-weight: 500;
+      cursor: default;
+    }
+
+    /* ---------- MAIN DASHBOARD (after login) ---------- */
+    .app-wrapper {
+      width: 100%;
+      max-width: 1440px;
+      display: none;
+      /* shown after login */;
+    }
+    .app-wrapper.active {
+      display: block;
+    }
+
     /* header */
-    .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-    .logo { display: flex; align-items: center; gap: 8px; font-size: 1.8rem; font-weight: 700; color: #1e293b; }
-    .logo i { color: #3b82f6; }
-    .badge { background: #dbeafe; color: #1e4b8a; padding: 6px 14px; border-radius: 40px; font-size: 0.85rem; font-weight: 600; }
-    .user-area { display: flex; align-items: center; gap: 16px; }
-    .btn { background: white; border: 1px solid #d1d5db; padding: 8px 18px; border-radius: 40px; font-weight: 500; cursor: pointer; transition: 0.2s; }
-    .btn-primary { background: #3b82f6; border: none; color: white; }
-    .btn-primary:hover { background: #2563eb; }
-    .btn-outline { background: transparent; border: 1px solid #cbd5e1; }
-    .btn-outline:hover { background: #f1f5f9; }
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 28px;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      padding: 16px 28px;
+      border-radius: 60px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    }
+    .dash-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0b1e33;
+    }
+    .dash-logo i {
+      color: #3b82f6;
+    }
+    .dash-user {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .role-tag {
+      background: #dbeafe;
+      color: #1e4b8a;
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .logout-btn {
+      background: transparent;
+      border: 1px solid #d1d5db;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.15s;
+      font-size: 0.9rem;
+      color: #1e293b;
+    }
+    .logout-btn:hover {
+      background: #f1f5f9;
+    }
 
     /* grid */
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    @media (max-width: 900px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
 
-    .card { background: white; border-radius: 24px; padding: 20px 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05); transition: 0.1s; border: 1px solid #edf2f7; }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .card-header h3 { font-size: 1.1rem; font-weight: 600; color: #0f172a; display: flex; align-items: center; gap: 8px; }
-    .card-header i { color: #3b82f6; width: 20px; }
-    .value { font-size: 1.8rem; font-weight: 700; color: #0f172a; }
-    .sub { color: #475569; font-size: 0.9rem; }
+    .card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(4px);
+      border-radius: 32px;
+      padding: 24px 26px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
+      transition: 0.15s;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .card-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #0b1e33;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-header h3 i {
+      color: #3b82f6;
+      width: 22px;
+    }
+    .badge-status {
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-green {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .badge-red {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .badge-yellow {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+    .badge-blue {
+      background: #dbeafe;
+      color: #1e4b8a;
+    }
 
-    .row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
-    .row:last-child { border-bottom: none; }
-    .label { color: #475569; }
-    .highlight { font-weight: 600; color: #0f172a; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+    .row:last-child {
+      border-bottom: none;
+    }
+    .label {
+      color: #475569;
+    }
+    .highlight {
+      font-weight: 600;
+      color: #0b1e33;
+    }
 
-    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 40px; font-size: 0.8rem; font-weight: 500; }
-    .status-red { background: #fee2e2; color: #991b1b; }
-    .status-yellow { background: #fef9c3; color: #854d0e; }
-    .status-green { background: #dcfce7; color: #166534; }
-    .status-blue { background: #dbeafe; color: #1e4b8a; }
+    .rec-list {
+      list-style: none;
+    }
+    .rec-list li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+    .rec-list li:last-child {
+      border-bottom: none;
+    }
+    .rec-num {
+      background: #eef2ff;
+      color: #3b82f6;
+      width: 30px;
+      height: 30px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
 
-    .rec-list { list-style: none; }
-    .rec-list li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
-    .rec-list li:last-child { border-bottom: none; }
-    .rec-num { background: #eef2ff; color: #3b82f6; width: 28px; height: 28px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .input-group input {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px 16px;
+      border-radius: 40px;
+      border: 1.5px solid #e2e8f0;
+      background: white;
+      font-size: 0.9rem;
+    }
+    .input-group button {
+      padding: 12px 24px;
+      border-radius: 40px;
+      border: none;
+      background: #0b1e33;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .input-group button:hover {
+      background: #1e3a5f;
+    }
 
-    .flex-between { display: flex; justify-content: space-between; align-items: center; }
-    .mt-2 { margin-top: 12px; }
-    .gap-2 { gap: 8px; }
+    .plan-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .plan-pill {
+      background: #f1f5f9;
+      padding: 6px 20px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      border: 1px solid #e2e8f0;
+    }
 
-    .plan-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
-    .plan-pill { background: #f8fafc; border-radius: 40px; padding: 6px 18px; font-size: 0.85rem; border: 1px solid #e2e8f0; }
+    .admin-panel {
+      background: #f8fafc;
+      border-radius: 24px;
+      padding: 16px 20px;
+      border: 1px dashed #94a3b8;
+      margin-top: 14px;
+    }
+    .admin-panel .row {
+      border-bottom-color: #e2e8f0;
+    }
 
-    .input-group { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
-    .input-group input { flex: 1; min-width: 140px; padding: 10px 14px; border-radius: 40px; border: 1px solid #d1d5db; background: white; }
-    .input-group button { padding: 10px 20px; border-radius: 40px; border: none; background: #3b82f6; color: white; font-weight: 600; cursor: pointer; }
-    .input-group button:hover { background: #2563eb; }
+    .footer-note {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #64748b;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
 
-    .toast { background: #0f172a; color: white; padding: 12px 20px; border-radius: 60px; display: inline-block; }
-    .footer-note { margin-top: 30px; font-size: 0.85rem; color: #64748b; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 24px; }
-    .inline-icon { margin-right: 6px; }
+    /* hidden helper */
+    .hidden {
+      display: none !important;
+    }
+
+    /* toast */
+    .toast-msg {
+      background: #0b1e33;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 60px;
+      font-size: 0.85rem;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
-<div class="app" id="app">
-  <!-- header -->
-  <div class="header">
-    <div class="logo"><i class="fas fa-home"></i> HomeAssistant <span class="badge">MVP</span></div>
-    <div class="user-area">
-      <span class="badge" style="background:#e2e8f0; color:#1e293b;"><i class="fas fa-user"></i> John's House</span>
-      <button class="btn btn-outline" id="resetDemoBtn"><i class="fas fa-sync-alt"></i> Reset demo</button>
+
+  <!-- ==================== AUTH CONTAINER ==================== -->
+  <div id="authContainer" class="auth-container">
+    <div class="auth-logo">
+      <i class="fas fa-home"></i> HomeAssistant
+      <span class="auth-role-badge">login</span>
+    </div>
+    <div class="auth-sub">
+      <i class="fas fa-shield-alt" style="color:#3b82f6;"></i> Secure access · credentials stored in Supabase
+    </div>
+
+    <div class="form-group">
+      <label for="loginEmail"><i class="fas fa-envelope" style="color:#64748b; margin-right:6px;"></i> Email</label>
+      <input type="email" id="loginEmail" placeholder="client@home.com" value="client@home.com" />
+    </div>
+    <div class="form-group">
+      <label for="loginPassword"><i class="fas fa-lock" style="color:#64748b; margin-right:6px;"></i> Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" value="client123" />
+    </div>
+
+    <button class="auth-btn" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Sign in</button>
+
+    <div id="authError" class="auth-error">
+      <i class="fas fa-circle-exclamation"></i> <span id="errorText">Invalid credentials</span>
+    </div>
+
+    <div class="auth-extra">
+      <span>👤 client@home.com / client123</span> &nbsp;·&nbsp; <span>🛡️ admin@home.com / admin123</span>
     </div>
   </div>
 
-  <!-- main grid -->
-  <div class="grid">
-    <!-- left column -->
-    <div style="display: flex; flex-direction: column; gap: 24px;">
-      <!-- home profile card -->
-      <div class="card">
-        <div class="card-header"><h3><i class="fas fa-info-circle"></i> Home Profile</h3> <span class="status-badge status-green"><i class="fas fa-check-circle"></i> Active</span></div>
-        <div class="row"><span class="label">📍 Location</span><span class="highlight" id="locationDisplay">Texas</span></div>
-        <div class="row"><span class="label">🏡 Home value</span><span class="highlight" id="valueDisplay">$450,000</span></div>
-        <div class="row"><span class="label">📆 Mortgage / mo</span><span class="highlight" id="mortgageDisplay">$2,400</span></div>
-        <div class="row"><span class="label">🛡️ Insurance / mo</span><span class="highlight" id="insuranceDisplay">$180</span></div>
-        <div class="row"><span class="label">📊 Monthly home cost</span><span class="highlight" id="monthlyCostDisplay">$3,120</span></div>
-        <div class="row"><span class="label">🏡 Home health</span><span class="highlight" id="healthDisplay">82/100 <i class="fas fa-heartbeat" style="color:#22c55e;"></i></span></div>
-        <div class="input-group" style="margin-top: 14px;">
-          <input type="text" id="locationInput" placeholder="Location" value="Texas">
-          <input type="number" id="valueInput" placeholder="Value" value="450000">
-          <input type="number" id="mortgageInput" placeholder="Mortgage" value="2400">
-          <input type="number" id="insuranceInput" placeholder="Insurance" value="180">
-          <button id="updateProfileBtn"><i class="fas fa-save"></i> Update</button>
-        </div>
-      </div>
+  <!-- ==================== DASHBOARD WRAPPER ==================== -->
+  <div id="appWrapper" class="app-wrapper">
 
-      <!-- maintenance calendar card -->
-      <div class="card">
-        <div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Maintenance Calendar</h3> <span class="status-badge status-blue">Upcoming</span></div>
-        <div class="row"><span class="label">🔴 Due soon</span><span class="highlight">Home insurance renewal in 12 days</span></div>
-        <div class="row"><span class="label">🟡 Maintenance</span><span class="highlight">HVAC service recommended</span></div>
-        <div class="row"><span class="label">📅 Upcoming</span><span class="highlight">Property tax payment (Dec 15)</span></div>
-        <div class="row"><span class="label">💡 Tip</span><span class="highlight">Set aside $180 for annual maintenance</span></div>
-        <div style="margin-top:12px;"><span class="status-badge status-yellow"><i class="fas fa-clock"></i> Next: HVAC filter check (due in 5 days)</span></div>
-      </div>
-
-      <!-- reminders card -->
-      <div class="card">
-        <div class="card-header"><h3><i class="fas fa-bell"></i> Reminders</h3> <span class="status-badge status-red">2 urgent</span></div>
-        <div class="row"><span class="label"><i class="fas fa-file-signature" style="color:#3b82f6;"></i> Insurance renewal</span><span class="highlight">Dec 12, 2026</span></div>
-        <div class="row"><span class="label"><i class="fas fa-tools" style="color:#eab308;"></i> HVAC service</span><span class="highlight">Recommended this month</span></div>
-        <div class="row"><span class="label"><i class="fas fa-hand-holding-usd" style="color:#22c55e;"></i> Mortgage review</span><span class="highlight">Rate check: 6.2%</span></div>
+    <!-- header -->
+    <div class="dashboard-header">
+      <div class="dash-logo"><i class="fas fa-home"></i> HomeAssistant <span style="font-size:0.8rem; background:#dbeafe; padding:4px 14px; border-radius:40px; color:#1e4b8a;">MVP</span></div>
+      <div class="dash-user">
+        <span class="role-tag" id="userRoleBadge"><i class="fas fa-user"></i> Client</span>
+        <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
     </div>
 
-    <!-- right column -->
-    <div style="display: flex; flex-direction: column; gap: 24px;">
-      <!-- killer feature: What should I do this month? -->
-      <div class="card" style="background: linear-gradient(145deg, #f0f7ff, #ffffff); border-left: 5px solid #3b82f6;">
-        <div class="card-header"><h3><i class="fas fa-lightbulb" style="color:#eab308;"></i> ⭐ What should I do this month?</h3> <span class="badge" style="background:#3b82f6; color:white;">AI plan</span></div>
-        <ul class="rec-list" id="recommendationList">
-          <li><span class="rec-num">1</span> Check HVAC filter</li>
-          <li><span class="rec-num">2</span> Compare insurance renewal</li>
-          <li><span class="rec-num">3</span> Clean gutters</li>
-          <li><span class="rec-num">4</span> Review mortgage rate</li>
-          <li><span class="rec-num">5</span> Set aside $180 for annual maintenance</li>
-        </ul>
-        <div style="margin-top: 12px; background: #eef2ff; padding: 10px 16px; border-radius: 40px; display: inline-block; font-size:0.9rem;"><i class="fas fa-robot" style="color:#3b82f6;"></i> AI generated based on your profile</div>
-      </div>
+    <!-- main grid -->
+    <div class="grid-2col">
+      <!-- LEFT COLUMN -->
+      <div style="display:flex; flex-direction:column; gap:28px;">
 
-      <!-- savings opportunities & cost tracking -->
-      <div class="card">
-        <div class="card-header"><h3><i class="fas fa-piggy-bank"></i> Savings & Costs</h3> <span class="status-badge status-green">$400/yr</span></div>
-        <div class="row"><span class="label">💰 Save</span><span class="highlight" style="color:#16a34a;">Switching insurance may save ~$400/year</span></div>
-        <div class="row"><span class="label">📊 Total monthly</span><span class="highlight" id="monthlyCostDisplay2">$3,120</span></div>
-        <div class="row"><span class="label">📈 Home value trend</span><span class="highlight"><i class="fas fa-arrow-up" style="color:#22c55e;"></i> +3.2% YoY</span></div>
-        <div class="row"><span class="label">🏷️ Document analysis</span><span class="highlight">🔍 Insurance policy (expires Dec 12)</span></div>
-      </div>
-
-      <!-- paid plans -->
-      <div class="card">
-        <div class="card-header"><h3><i class="fas fa-crown"></i> Plans</h3> <span class="badge" style="background:#f1f5f9;">Current: Free</span></div>
-        <div class="plan-grid">
-          <span class="plan-pill"><i class="fas fa-check-circle" style="color:#22c55e;"></i> Free · Basic dashboard</span>
-          <span class="plan-pill"><i class="fas fa-star" style="color:#eab308;"></i> $9/mo · AI recs + cost tracking</span>
-          <span class="plan-pill"><i class="fas fa-gem" style="color:#3b82f6;"></i> $19/mo · Savings + document analysis</span>
+        <!-- Home Profile -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-info-circle"></i> Home Profile</h3>
+            <span class="badge-status badge-green"><i class="fas fa-check-circle"></i> Active</span>
+          </div>
+          <div class="row"><span class="label">📍 Location</span><span class="highlight" id="locationDisplay">Texas</span></div>
+          <div class="row"><span class="label">🏡 Home value</span><span class="highlight" id="valueDisplay">$450,000</span></div>
+          <div class="row"><span class="label">📆 Mortgage / mo</span><span class="highlight" id="mortgageDisplay">$2,400</span></div>
+          <div class="row"><span class="label">🛡️ Insurance / mo</span><span class="highlight" id="insuranceDisplay">$180</span></div>
+          <div class="row"><span class="label">📊 Monthly cost</span><span class="highlight" id="monthlyCostDisplay">$3,120</span></div>
+          <div class="row"><span class="label">🏡 Home health</span><span class="highlight" id="healthDisplay">82/100 <i class="fas fa-heartbeat" style="color:#22c55e;"></i></span></div>
+          <div class="input-group">
+            <input type="text" id="locationInput" placeholder="Location" value="Texas" />
+            <input type="number" id="valueInput" placeholder="Value" value="450000" />
+            <input type="number" id="mortgageInput" placeholder="Mortgage" value="2400" />
+            <input type="number" id="insuranceInput" placeholder="Insurance" value="180" />
+            <button id="updateProfileBtn"><i class="fas fa-save"></i> Update</button>
+          </div>
         </div>
-        <div style="margin-top: 12px; background: #f8fafc; padding: 12px 16px; border-radius: 20px; font-size:0.9rem;">
-          <i class="fas fa-arrow-right" style="color:#3b82f6;"></i> Upgrade to get AI savings opportunities & annual report
+
+        <!-- Maintenance Calendar -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-calendar-alt"></i> Maintenance Calendar</h3>
+            <span class="badge-status badge-blue">Upcoming</span>
+          </div>
+          <div class="row"><span class="label">🔴 Due soon</span><span class="highlight">Home insurance renewal in 12 days</span></div>
+          <div class="row"><span class="label">🟡 Maintenance</span><span class="highlight">HVAC service recommended</span></div>
+          <div class="row"><span class="label">📅 Upcoming</span><span class="highlight">Property tax payment (Dec 15)</span></div>
+          <div class="row"><span class="label">💡 Tip</span><span class="highlight">Set aside $180 for annual maintenance</span></div>
+          <div style="margin-top:12px;"><span class="badge-status badge-yellow"><i class="fas fa-clock"></i> Next: HVAC filter check (due in 5 days)</span></div>
+        </div>
+
+        <!-- Reminders -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-bell"></i> Reminders</h3>
+            <span class="badge-status badge-red">2 urgent</span>
+          </div>
+          <div class="row"><span class="label"><i class="fas fa-file-signature" style="color:#3b82f6;"></i> Insurance renewal</span><span class="highlight">Dec 12, 2026</span></div>
+          <div class="row"><span class="label"><i class="fas fa-tools" style="color:#eab308;"></i> HVAC service</span><span class="highlight">Recommended this month</span></div>
+          <div class="row"><span class="label"><i class="fas fa-hand-holding-usd" style="color:#22c55e;"></i> Mortgage review</span><span class="highlight">Rate check: 6.2%</span></div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div style="display:flex; flex-direction:column; gap:28px;">
+
+        <!-- Killer Feature: AI action plan -->
+        <div class="card" style="background: linear-gradient(145deg, #f0f7ff, #ffffff); border-left: 5px solid #3b82f6;">
+          <div class="card-header">
+            <h3><i class="fas fa-lightbulb" style="color:#eab308;"></i> ⭐ What should I do this month?</h3>
+            <span class="badge-status badge-blue" style="background:#3b82f6; color:white;">AI plan</span>
+          </div>
+          <ul class="rec-list" id="recommendationList">
+            <li><span class="rec-num">1</span> Check HVAC filter</li>
+            <li><span class="rec-num">2</span> Compare insurance renewal</li>
+            <li><span class="rec-num">3</span> Clean gutters</li>
+            <li><span class="rec-num">4</span> Review mortgage rate</li>
+            <li><span class="rec-num">5</span> Set aside $180 for annual maintenance</li>
+          </ul>
+          <div style="margin-top:14px; background:#eef2ff; padding:10px 18px; border-radius:40px; display:inline-block; font-size:0.85rem;"><i class="fas fa-robot" style="color:#3b82f6;"></i> AI generated based on your profile</div>
+        </div>
+
+        <!-- Savings & Costs -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-piggy-bank"></i> Savings & Costs</h3>
+            <span class="badge-status badge-green">$400/yr</span>
+          </div>
+          <div class="row"><span class="label">💰 Save</span><span class="highlight" style="color:#16a34a;">Switching insurance may save ~$400/year</span></div>
+          <div class="row"><span class="label">📊 Total monthly</span><span class="highlight" id="monthlyCostDisplay2">$3,120</span></div>
+          <div class="row"><span class="label">📈 Home value trend</span><span class="highlight"><i class="fas fa-arrow-up" style="color:#22c55e;"></i> +3.2% YoY</span></div>
+          <div class="row"><span class="label">🏷️ Document analysis</span><span class="highlight">🔍 Insurance policy (expires Dec 12)</span></div>
+        </div>
+
+        <!-- Plans + Admin panel (visible only to admin) -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-crown"></i> Plans</h3>
+            <span class="badge-status badge-blue" id="planBadge">Current: Free</span>
+          </div>
+          <div class="plan-pills">
+            <span class="plan-pill"><i class="fas fa-check-circle" style="color:#22c55e;"></i> Free · Basic</span>
+            <span class="plan-pill"><i class="fas fa-star" style="color:#eab308;"></i> $9/mo · AI + tracking</span>
+            <span class="plan-pill"><i class="fas fa-gem" style="color:#3b82f6;"></i> $19/mo · Savings + doc</span>
+          </div>
+          <div style="margin-top:12px; background:#f8fafc; padding:12px 16px; border-radius:20px; font-size:0.9rem;">
+            <i class="fas fa-arrow-right" style="color:#3b82f6;"></i> Upgrade to get AI savings opportunities & annual report
+          </div>
+
+          <!-- ADMIN PANEL (hidden for client) -->
+          <div id="adminPanel" class="admin-panel hidden">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+              <i class="fas fa-user-shield" style="color:#3b82f6;"></i> <strong>Admin controls</strong>
+              <span class="badge-status badge-red" style="font-size:0.7rem;">restricted</span>
+            </div>
+            <div class="row"><span class="label">👥 Total users</span><span class="highlight" id="totalUsersDisplay">2</span></div>
+            <div class="row"><span class="label">📋 Active homes</span><span class="highlight" id="activeHomesDisplay">1</span></div>
+            <div class="row"><span class="label">📊 Revenue (MRR)</span><span class="highlight" id="mrrDisplay">$0</span></div>
+            <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn" style="background:#0b1e33; color:white; border:none; padding:6px 18px; border-radius:40px;">📋 View all</button>
+              <button class="btn" style="background:#f1f5f9; border:1px solid #d1d5db; padding:6px 18px; border-radius:40px;">⚙️ Settings</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
+    <div class="footer-note">
+      <span><i class="fas fa-database"></i> Supabase (table: users) · <span id="dbStatus" style="color:#22c55e;">✅ connected</span></span>
+      <span><i class="fab fa-github"></i> GitHub ready · <span style="color:#3b82f6;">code pushed</span></span>
+      <span><i class="fas fa-home"></i> MVP: Profile → Expenses → Calendar → AI → Reminders</span>
+    </div>
   </div>
 
-  <!-- supabase status & footer -->
-  <div class="footer-note" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-    <span><i class="fas fa-database"></i> Supabase connected · <span id="dbStatus" style="color:#22c55e;">✅ live</span></span>
-    <span><i class="fab fa-github"></i> GitHub ready · <span style="color:#3b82f6;">code pushed</span></span>
-    <span><i class="fas fa-home"></i> MVP: Profile → Expenses → Calendar → AI → Reminders</span>
-  </div>
-</div>
+  <script>
+    // ============================================================
+    //  SUPABASE CONFIG (replace with your own)
+    // ============================================================
+    const SUPABASE_URL = 'https://your-project.supabase.co'; // <-- replace
+    const SUPABASE_ANON_KEY = 'your-anon-key'; // <-- replace
+    const USE_SUPABASE = false; // set to true when you have valid credentials
 
-<script>
-  // ---------- SUPABASE CONFIG ----------
-  const supabaseUrl = 'https://your-project.supabase.co'; // REPLACE with your URL
-  const supabaseKey = 'your-anon-key'; // REPLACE with your anon key
-  // For demo we'll use localStorage as fallback if supabase is not configured
-  const useSupabase = false; // set to true when you have credentials
-
-  // Initialize supabase client (dummy if not configured)
-  let supabase = null;
-  if (useSupabase && supabaseUrl.includes('your-project') === false) {
-    supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-  }
-
-  // ---------- STATE ----------
-  let profile = {
-    location: 'Texas',
-    value: 450000,
-    mortgage: 2400,
-    insurance: 180,
-    health: 82
-  };
-
-  // ---------- DOM refs ----------
-  const locationDisplay = document.getElementById('locationDisplay');
-  const valueDisplay = document.getElementById('valueDisplay');
-  const mortgageDisplay = document.getElementById('mortgageDisplay');
-  const insuranceDisplay = document.getElementById('insuranceDisplay');
-  const monthlyCostDisplay = document.getElementById('monthlyCostDisplay');
-  const monthlyCostDisplay2 = document.getElementById('monthlyCostDisplay2');
-  const healthDisplay = document.getElementById('healthDisplay');
-
-  const locationInput = document.getElementById('locationInput');
-  const valueInput = document.getElementById('valueInput');
-  const mortgageInput = document.getElementById('mortgageInput');
-  const insuranceInput = document.getElementById('insuranceInput');
-
-  const updateBtn = document.getElementById('updateProfileBtn');
-  const resetBtn = document.getElementById('resetDemoBtn');
-
-  // recommendations list
-  const recList = document.getElementById('recommendationList');
-
-  // ---------- RENDER UI ----------
-  function renderProfile() {
-    const monthly = profile.mortgage + profile.insurance;
-    locationDisplay.textContent = profile.location;
-    valueDisplay.textContent = `$${profile.value.toLocaleString()}`;
-    mortgageDisplay.textContent = `$${profile.mortgage.toLocaleString()}`;
-    insuranceDisplay.textContent = `$${profile.insurance.toLocaleString()}`;
-    monthlyCostDisplay.textContent = `$${monthly.toLocaleString()}`;
-    monthlyCostDisplay2.textContent = `$${monthly.toLocaleString()}`;
-    healthDisplay.innerHTML = `${profile.health}/100 <i class="fas fa-heartbeat" style="color:#22c55e;"></i>`;
-
-    // update inputs to match
-    locationInput.value = profile.location;
-    valueInput.value = profile.value;
-    mortgageInput.value = profile.mortgage;
-    insuranceInput.value = profile.insurance;
-  }
-
-  // update recommendations based on profile (simple AI logic)
-  function updateRecommendations() {
-    const recs = [
-      'Check HVAC filter',
-      'Compare insurance renewal',
-      'Clean gutters',
-      'Review mortgage rate',
-      'Set aside $180 for annual maintenance'
-    ];
-    // dynamic: if insurance > 200, add insurance saving tip
-    if (profile.insurance > 200) {
-      recs.splice(1, 0, 'Shop for cheaper insurance');
+    let supabase = null;
+    if (USE_SUPABASE && SUPABASE_URL.includes('your-project') === false) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
-    // if mortgage > 2500, add refi tip
-    if (profile.mortgage > 2500) {
-      recs.splice(3, 0, 'Consider mortgage refinance');
-    }
-    // limit to 5 items
-    while (recs.length > 5) recs.pop();
 
-    recList.innerHTML = recs.map((text, idx) => 
-      `<li><span class="rec-num">${idx+1}</span> ${text}</li>`
-    ).join('');
-  }
-
-  // ---------- SAVE TO SUPABASE (if configured) ----------
-  async function saveProfileToSupabase() {
-    if (!supabase) return;
-    try {
-      const { error } = await supabase
-        .from('home_profiles')  // table name
-        .upsert({ id: 1, ...profile }, { onConflict: 'id' });
-      if (error) console.warn('Supabase save error:', error);
-      else console.log('✅ Profile saved to Supabase');
-    } catch (e) { console.warn('Supabase not available'); }
-  }
-
-  // load from supabase
-  async function loadProfileFromSupabase() {
-    if (!supabase) return;
-    try {
-      const { data, error } = await supabase
-        .from('home_profiles')
-        .select('*')
-        .eq('id', 1)
-        .single();
-      if (error) throw error;
-      if (data) {
-        profile.location = data.location || 'Texas';
-        profile.value = data.value || 450000;
-        profile.mortgage = data.mortgage || 2400;
-        profile.insurance = data.insurance || 180;
-        profile.health = data.health || 82;
-        renderProfile();
-        updateRecommendations();
-      }
-    } catch (e) { console.log('Supabase load skipped, using localStorage'); }
-  }
-
-  // ---------- LOCAL STORAGE FALLBACK ----------
-  function saveToLocal() {
-    localStorage.setItem('homeProfile', JSON.stringify(profile));
-  }
-  function loadFromLocal() {
-    const stored = localStorage.getItem('homeProfile');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        profile = { ...profile, ...parsed };
-        renderProfile();
-        updateRecommendations();
-      } catch(e) {}
-    }
-  }
-
-  // ---------- UPDATE PROFILE ----------
-  function updateProfile() {
-    const loc = locationInput.value.trim() || 'Texas';
-    const val = parseFloat(valueInput.value) || 450000;
-    const mort = parseFloat(mortgageInput.value) || 2400;
-    const ins = parseFloat(insuranceInput.value) || 180;
-    profile.location = loc;
-    profile.value = val;
-    profile.mortgage = mort;
-    profile.insurance = ins;
-    // health changes slightly based on inputs (fun)
-    profile.health = Math.min(100, Math.round(80 + (val - 300000)/50000 + (ins < 200 ? 3 : 0)));
-    renderProfile();
-    updateRecommendations();
-    saveToLocal();
-    if (supabase) saveProfileToSupabase();
-    // show toast feedback
-    const btn = updateBtn;
-    const orig = btn.textContent;
-    btn.textContent = '✅ Saved!';
-    setTimeout(() => btn.textContent = orig, 1500);
-  }
-
-  // ---------- RESET DEMO ----------
-  function resetDemo() {
-    profile = {
+    // ============================================================
+    //  STATE
+    // ============================================================
+    let currentUser = null; // { email, role }
+    let profile = {
       location: 'Texas',
       value: 450000,
       mortgage: 2400,
       insurance: 180,
       health: 82
     };
-    renderProfile();
-    updateRecommendations();
-    saveToLocal();
-    if (supabase) saveProfileToSupabase();
-    const btn = resetBtn;
-    btn.textContent = '✅ Reset';
-    setTimeout(() => btn.textContent = 'Reset demo', 1200);
-  }
 
-  // ---------- INIT ----------
-  function init() {
-    // load from local first
-    loadFromLocal();
-    // then try supabase (if configured, it will override)
-    if (supabase) {
-      loadProfileFromSupabase().then(() => {
-        renderProfile();
-        updateRecommendations();
-      });
+    // ============================================================
+    //  DOM REFS
+    // ============================================================
+    const authContainer = document.getElementById('authContainer');
+    const appWrapper = document.getElementById('appWrapper');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    const loginBtn = document.getElementById('loginBtn');
+    const authError = document.getElementById('authError');
+    const errorText = document.getElementById('errorText');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userRoleBadge = document.getElementById('userRoleBadge');
+
+    // profile fields
+    const locationDisplay = document.getElementById('locationDisplay');
+    const valueDisplay = document.getElementById('valueDisplay');
+    const mortgageDisplay = document.getElementById('mortgageDisplay');
+    const insuranceDisplay = document.getElementById('insuranceDisplay');
+    const monthlyCostDisplay = document.getElementById('monthlyCostDisplay');
+    const monthlyCostDisplay2 = document.getElementById('monthlyCostDisplay2');
+    const healthDisplay = document.getElementById('healthDisplay');
+    const locationInput = document.getElementById('locationInput');
+    const valueInput = document.getElementById('valueInput');
+    const mortgageInput = document.getElementById('mortgageInput');
+    const insuranceInput = document.getElementById('insuranceInput');
+    const updateBtn = document.getElementById('updateProfileBtn');
+    const recList = document.getElementById('recommendationList');
+    const adminPanel = document.getElementById('adminPanel');
+    const totalUsersDisplay = document.getElementById('totalUsersDisplay');
+    const activeHomesDisplay = document.getElementById('activeHomesDisplay');
+    const mrrDisplay = document.getElementById('mrrDisplay');
+    const planBadge = document.getElementById('planBadge');
+
+    // ============================================================
+    //  RENDER FUNCTIONS
+    // ============================================================
+    function renderProfile() {
+      const monthly = profile.mortgage + profile.insurance;
+      locationDisplay.textContent = profile.location;
+      valueDisplay.textContent = `$${profile.value.toLocaleString()}`;
+      mortgageDisplay.textContent = `$${profile.mortgage.toLocaleString()}`;
+      insuranceDisplay.textContent = `$${profile.insurance.toLocaleString()}`;
+      monthlyCostDisplay.textContent = `$${monthly.toLocaleString()}`;
+      monthlyCostDisplay2.textContent = `$${monthly.toLocaleString()}`;
+      healthDisplay.innerHTML = `${profile.health}/100 <i class="fas fa-heartbeat" style="color:#22c55e;"></i>`;
+      locationInput.value = profile.location;
+      valueInput.value = profile.value;
+      mortgageInput.value = profile.mortgage;
+      insuranceInput.value = profile.insurance;
     }
-    // set up event listeners
-    updateBtn.addEventListener('click', updateProfile);
-    resetBtn.addEventListener('click', resetDemo);
 
-    // update on enter key in inputs
+    function updateRecommendations() {
+      let recs = [
+        'Check HVAC filter',
+        'Compare insurance renewal',
+        'Clean gutters',
+        'Review mortgage rate',
+        'Set aside $180 for annual maintenance'
+      ];
+      if (profile.insurance > 200) recs.splice(1, 0, 'Shop for cheaper insurance');
+      if (profile.mortgage > 2500) recs.splice(3, 0, 'Consider mortgage refinance');
+      while (recs.length > 5) recs.pop();
+      recList.innerHTML = recs.map((text, idx) =>
+        `<li><span class="rec-num">${idx+1}</span> ${text}</li>`
+      ).join('');
+    }
+
+    function renderAdminPanel() {
+      if (currentUser && currentUser.role === 'admin') {
+        adminPanel.classList.remove('hidden');
+        totalUsersDisplay.textContent = '2';
+        activeHomesDisplay.textContent = '1';
+        mrrDisplay.textContent = '$0';
+        planBadge.textContent = 'Admin · full access';
+      } else {
+        adminPanel.classList.add('hidden');
+        planBadge.textContent = 'Current: Free';
+      }
+    }
+
+    function updateUI() {
+      renderProfile();
+      updateRecommendations();
+      renderAdminPanel();
+      if (currentUser) {
+        userRoleBadge.innerHTML = `<i class="fas fa-user"></i> ${currentUser.role === 'admin' ? 'Admin' : 'Client'}`;
+      }
+    }
+
+    // ============================================================
+    //  AUTH (using Supabase table 'users')
+    // ============================================================
+    async function login(email, password) {
+      authError.classList.remove('show');
+      if (!email || !password) {
+        errorText.textContent = 'Please enter email and password.';
+        authError.classList.add('show');
+        return;
+      }
+
+      // if supabase is configured, query table
+      let user = null;
+      if (supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('users')
+            .select('email, role')
+            .eq('email', email)
+            .eq('password', password)
+            .maybeSingle();
+          if (error) throw error;
+          if (data) {
+            user = { email: data.email, role: data.role || 'client' };
+          }
+        } catch (e) {
+          console.warn('Supabase query error, fallback to local', e);
+        }
+      }
+
+      // fallback / local credentials (demo)
+      if (!user) {
+        if (email === 'client@home.com' && password === 'client123') {
+          user = { email: 'client@home.com', role: 'client' };
+        } else if (email === 'admin@home.com' && password === 'admin123') {
+          user = { email: 'admin@home.com', role: 'admin' };
+        }
+      }
+
+      if (!user) {
+        errorText.textContent = 'Invalid email or password.';
+        authError.classList.add('show');
+        return;
+      }
+
+      // success
+      currentUser = user;
+      authContainer.style.display = 'none';
+      appWrapper.classList.add('active');
+      // load profile from local storage (or default)
+      loadFromLocal();
+      updateUI();
+    }
+
+    function logout() {
+      currentUser = null;
+      authContainer.style.display = 'block';
+      appWrapper.classList.remove('active');
+      authError.classList.remove('show');
+      loginEmail.value = '';
+      loginPassword.value = '';
+    }
+
+    // ============================================================
+    //  LOCAL STORAGE (profile)
+    // ============================================================
+    function saveToLocal() {
+      localStorage.setItem('homeProfile', JSON.stringify(profile));
+    }
+    function loadFromLocal() {
+      const stored = localStorage.getItem('homeProfile');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          profile = { ...profile, ...parsed };
+        } catch (e) {}
+      }
+    }
+
+    // ============================================================
+    //  UPDATE PROFILE
+    // ============================================================
+    function updateProfile() {
+      const loc = locationInput.value.trim() || 'Texas';
+      const val = parseFloat(valueInput.value) || 450000;
+      const mort = parseFloat(mortgageInput.value) || 2400;
+      const ins = parseFloat(insuranceInput.value) || 180;
+      profile.location = loc;
+      profile.value = val;
+      profile.mortgage = mort;
+      profile.insurance = ins;
+      profile.health = Math.min(100, Math.round(80 + (val - 300000) / 50000 + (ins < 200 ? 3 : 0)));
+      renderProfile();
+      updateRecommendations();
+      saveToLocal();
+      // also save to supabase if admin? optional
+      const btn = updateBtn;
+      const orig = btn.textContent;
+      btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+      setTimeout(() => btn.innerHTML = orig, 1200);
+    }
+
+    // ============================================================
+    //  EVENT LISTENERS
+    // ============================================================
+    loginBtn.addEventListener('click', () => {
+      login(loginEmail.value.trim(), loginPassword.value.trim());
+    });
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && authContainer.style.display !== 'none') {
+        login(loginEmail.value.trim(), loginPassword.value.trim());
+      }
+    });
+    logoutBtn.addEventListener('click', logout);
+    updateBtn.addEventListener('click', updateProfile);
+
+    // input enter
     document.querySelectorAll('#locationInput, #valueInput, #mortgageInput, #insuranceInput').forEach(inp => {
       inp.addEventListener('keypress', (e) => { if (e.key === 'Enter') updateProfile(); });
     });
 
-    // show supabase status
+    // ============================================================
+    //  INIT
+    // ============================================================
+    // check if already logged in? skip for demo, start at login
+    authContainer.style.display = 'block';
+    appWrapper.classList.remove('active');
+
+    // set db status
     const dbStatus = document.getElementById('dbStatus');
     if (supabase) {
-      dbStatus.textContent = '✅ connected (supabase)';
+      dbStatus.textContent = '✅ Supabase (table: users)';
       dbStatus.style.color = '#22c55e';
     } else {
-      dbStatus.textContent = '⚡ local storage (supabase not configured)';
+      dbStatus.textContent = '⚡ local fallback (configure supabase)';
       dbStatus.style.color = '#eab308';
     }
-    // initial render
-    renderProfile();
-    updateRecommendations();
-  }
 
-  // run
-  init();
-</script>
+    // prefill demo credentials
+    loginEmail.value = 'client@home.com';
+    loginPassword.value = 'client123';
 
-<!-- note: replace supabase credentials in script above for full functionality -->
+    // load local profile for later
+    loadFromLocal();
+
+    console.log('🏠 AI Homeowner Assistant · login with client@home.com / client123  or  admin@home.com / admin123');
+  </script>
 </body>
 </html>
