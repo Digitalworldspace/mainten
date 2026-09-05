@@ -3,26 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🏠 AI Homeowner Assistant · Admin + Client</title>
+  <title>🏠 AI Homeowner Assistant · Full Working</title>
   <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
   </script>
-  <!-- Font Awesome 6 (free) -->
+  <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <!-- Google Font (Inter) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet" />
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
 
     body {
-      background: linear-gradient(145deg, #f6f9fc 0%, #eef2f7 100%);
+      background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -30,33 +26,33 @@
       padding: 20px;
     }
 
-    /* ---------- AUTH CARD (login) ---------- */
+    /* ---------- LOGIN ---------- */
     .auth-container {
       width: 100%;
-      max-width: 480px;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
+      max-width: 440px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
       border-radius: 48px;
       padding: 40px 36px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.5);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.6);
       transition: 0.2s;
-      border: 1px solid rgba(255, 255, 255, 0.7);
     }
 
     .auth-logo {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 700;
       color: #0b1e33;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .auth-logo i {
       color: #3b82f6;
       background: #dbeafe;
       padding: 10px;
-      border-radius: 20px;
+      border-radius: 18px;
     }
     .auth-sub {
       color: #475569;
@@ -67,7 +63,7 @@
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     .form-group label {
       display: block;
@@ -88,8 +84,9 @@
     }
     .form-group input:focus {
       border-color: #3b82f6;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
     }
+
     .auth-btn {
       width: 100%;
       padding: 14px;
@@ -101,7 +98,7 @@
       font-size: 1rem;
       cursor: pointer;
       transition: 0.15s;
-      margin-top: 8px;
+      margin-top: 4px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -111,9 +108,7 @@
       background: #1e3a5f;
       transform: scale(0.98);
     }
-    .auth-btn i {
-      font-size: 1.1rem;
-    }
+
     .auth-error {
       background: #fee2e2;
       color: #991b1b;
@@ -128,16 +123,7 @@
     .auth-error.show {
       display: flex;
     }
-    .auth-role-badge {
-      display: inline-block;
-      background: #e2e8f0;
-      padding: 4px 16px;
-      border-radius: 40px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #1e293b;
-      letter-spacing: 0.3px;
-    }
+
     .auth-extra {
       margin-top: 18px;
       text-align: center;
@@ -150,18 +136,16 @@
       cursor: default;
     }
 
-    /* ---------- MAIN DASHBOARD (after login) ---------- */
+    /* ---------- DASHBOARD ---------- */
     .app-wrapper {
       width: 100%;
       max-width: 1440px;
       display: none;
-      /* shown after login */;
     }
     .app-wrapper.active {
       display: block;
     }
 
-    /* header */
     .dashboard-header {
       display: flex;
       justify-content: space-between;
@@ -169,28 +153,30 @@
       flex-wrap: wrap;
       gap: 16px;
       margin-bottom: 28px;
-      background: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.75);
       backdrop-filter: blur(8px);
-      padding: 16px 28px;
+      padding: 14px 28px;
       border-radius: 60px;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
     }
+
     .dash-logo {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: #0b1e33;
     }
     .dash-logo i {
       color: #3b82f6;
     }
+
     .dash-user {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 16px;
     }
     .role-tag {
       background: #dbeafe;
@@ -231,19 +217,20 @@
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.82);
       backdrop-filter: blur(4px);
       border-radius: 32px;
       padding: 24px 26px;
-      border: 1px solid rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.6);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
       transition: 0.15s;
     }
+
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
     .card-header h3 {
       font-size: 1.1rem;
@@ -257,6 +244,7 @@
       color: #3b82f6;
       width: 22px;
     }
+
     .badge-status {
       display: inline-block;
       padding: 4px 16px;
@@ -332,12 +320,17 @@
     }
     .input-group input {
       flex: 1;
-      min-width: 120px;
+      min-width: 100px;
       padding: 12px 16px;
       border-radius: 40px;
       border: 1.5px solid #e2e8f0;
       background: white;
       font-size: 0.9rem;
+    }
+    .input-group input:focus {
+      border-color: #3b82f6;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
     .input-group button {
       padding: 12px 24px;
@@ -391,7 +384,6 @@
       gap: 8px;
     }
 
-    /* hidden helper */
     .hidden {
       display: none !important;
     }
@@ -405,26 +397,41 @@
       font-size: 0.85rem;
       display: inline-block;
     }
+
+    .setup-guide {
+      background: #f1f5f9;
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-top: 16px;
+      font-size: 0.85rem;
+      border-left: 4px solid #3b82f6;
+    }
+    .setup-guide code {
+      background: #e2e8f0;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
   </style>
 </head>
 <body>
 
-  <!-- ==================== AUTH CONTAINER ==================== -->
+  <!-- ==================== LOGIN ==================== -->
   <div id="authContainer" class="auth-container">
     <div class="auth-logo">
       <i class="fas fa-home"></i> HomeAssistant
-      <span class="auth-role-badge">login</span>
+      <span style="font-size:0.7rem; background:#e2e8f0; padding:2px 14px; border-radius:40px;">login</span>
     </div>
     <div class="auth-sub">
-      <i class="fas fa-shield-alt" style="color:#3b82f6;"></i> Secure access · credentials stored in Supabase
+      <i class="fas fa-database" style="color:#3b82f6;"></i> Supabase · users table
     </div>
 
     <div class="form-group">
-      <label for="loginEmail"><i class="fas fa-envelope" style="color:#64748b; margin-right:6px;"></i> Email</label>
+      <label><i class="fas fa-envelope" style="color:#64748b; margin-right:6px;"></i> Email</label>
       <input type="email" id="loginEmail" placeholder="client@home.com" value="client@home.com" />
     </div>
     <div class="form-group">
-      <label for="loginPassword"><i class="fas fa-lock" style="color:#64748b; margin-right:6px;"></i> Password</label>
+      <label><i class="fas fa-lock" style="color:#64748b; margin-right:6px;"></i> Password</label>
       <input type="password" id="loginPassword" placeholder="••••••••" value="client123" />
     </div>
 
@@ -437,12 +444,20 @@
     <div class="auth-extra">
       <span>👤 client@home.com / client123</span> &nbsp;·&nbsp; <span>🛡️ admin@home.com / admin123</span>
     </div>
+
+    <!-- Supabase Setup Guide -->
+    <div class="setup-guide">
+      <strong><i class="fas fa-database"></i> Supabase Setup</strong><br />
+      1. Create table <code>users</code> with columns: <code>id</code> (uuid, PK), <code>email</code> (text), <code>password</code> (text), <code>role</code> (text)<br />
+      2. Insert: <code>('client@home.com','client123','client')</code> and <code>('admin@home.com','admin123','admin')</code><br />
+      3. Replace <code>SUPABASE_URL</code> & <code>SUPABASE_ANON_KEY</code> in script
+    </div>
   </div>
 
-  <!-- ==================== DASHBOARD WRAPPER ==================== -->
+  <!-- ==================== DASHBOARD ==================== -->
   <div id="appWrapper" class="app-wrapper">
 
-    <!-- header -->
+    <!-- Header -->
     <div class="dashboard-header">
       <div class="dash-logo"><i class="fas fa-home"></i> HomeAssistant <span style="font-size:0.8rem; background:#dbeafe; padding:4px 14px; border-radius:40px; color:#1e4b8a;">MVP</span></div>
       <div class="dash-user">
@@ -451,8 +466,9 @@
       </div>
     </div>
 
-    <!-- main grid -->
+    <!-- Grid -->
     <div class="grid-2col">
+
       <!-- LEFT COLUMN -->
       <div style="display:flex; flex-direction:column; gap:28px;">
 
@@ -505,7 +521,7 @@
       <!-- RIGHT COLUMN -->
       <div style="display:flex; flex-direction:column; gap:28px;">
 
-        <!-- Killer Feature: AI action plan -->
+        <!-- AI Action Plan -->
         <div class="card" style="background: linear-gradient(145deg, #f0f7ff, #ffffff); border-left: 5px solid #3b82f6;">
           <div class="card-header">
             <h3><i class="fas fa-lightbulb" style="color:#eab308;"></i> ⭐ What should I do this month?</h3>
@@ -533,7 +549,7 @@
           <div class="row"><span class="label">🏷️ Document analysis</span><span class="highlight">🔍 Insurance policy (expires Dec 12)</span></div>
         </div>
 
-        <!-- Plans + Admin panel (visible only to admin) -->
+        <!-- Plans + Admin Panel -->
         <div class="card">
           <div class="card-header">
             <h3><i class="fas fa-crown"></i> Plans</h3>
@@ -548,7 +564,7 @@
             <i class="fas fa-arrow-right" style="color:#3b82f6;"></i> Upgrade to get AI savings opportunities & annual report
           </div>
 
-          <!-- ADMIN PANEL (hidden for client) -->
+          <!-- ADMIN PANEL -->
           <div id="adminPanel" class="admin-panel hidden">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
               <i class="fas fa-user-shield" style="color:#3b82f6;"></i> <strong>Admin controls</strong>
@@ -558,8 +574,8 @@
             <div class="row"><span class="label">📋 Active homes</span><span class="highlight" id="activeHomesDisplay">1</span></div>
             <div class="row"><span class="label">📊 Revenue (MRR)</span><span class="highlight" id="mrrDisplay">$0</span></div>
             <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
-              <button class="btn" style="background:#0b1e33; color:white; border:none; padding:6px 18px; border-radius:40px;">📋 View all</button>
-              <button class="btn" style="background:#f1f5f9; border:1px solid #d1d5db; padding:6px 18px; border-radius:40px;">⚙️ Settings</button>
+              <button class="btn" style="background:#0b1e33; color:white; border:none; padding:6px 18px; border-radius:40px; cursor:pointer;">📋 View all</button>
+              <button class="btn" style="background:#f1f5f9; border:1px solid #d1d5db; padding:6px 18px; border-radius:40px; cursor:pointer;">⚙️ Settings</button>
             </div>
           </div>
         </div>
@@ -567,29 +583,29 @@
     </div>
 
     <div class="footer-note">
-      <span><i class="fas fa-database"></i> Supabase (table: users) · <span id="dbStatus" style="color:#22c55e;">✅ connected</span></span>
-      <span><i class="fab fa-github"></i> GitHub ready · <span style="color:#3b82f6;">code pushed</span></span>
+      <span><i class="fas fa-database"></i> Supabase · <span id="dbStatus" style="color:#22c55e;">✅ connected</span></span>
+      <span><i class="fab fa-github"></i> GitHub ready</span>
       <span><i class="fas fa-home"></i> MVP: Profile → Expenses → Calendar → AI → Reminders</span>
     </div>
   </div>
 
   <script>
-    // ============================================================
-    //  SUPABASE CONFIG (replace with your own)
-    // ============================================================
-    const SUPABASE_URL = 'https://your-project.supabase.co'; // <-- replace
-    const SUPABASE_ANON_KEY = 'your-anon-key'; // <-- replace
-    const USE_SUPABASE = false; // set to true when you have valid credentials
+    // ================================================================
+    //  🔧 SUPABASE CONFIG — REPLACE WITH YOUR CREDENTIALS
+    // ================================================================
+    const SUPABASE_URL = 'https://your-project.supabase.co'; // ← replace
+    const SUPABASE_ANON_KEY = 'your-anon-key'; // ← replace
+    const USE_SUPABASE = false; // set to true after replacing credentials
 
     let supabase = null;
-    if (USE_SUPABASE && SUPABASE_URL.includes('your-project') === false) {
+    if (USE_SUPABASE && !SUPABASE_URL.includes('your-project')) {
       supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
-    // ============================================================
+    // ================================================================
     //  STATE
-    // ============================================================
-    let currentUser = null; // { email, role }
+    // ================================================================
+    let currentUser = null;
     let profile = {
       location: 'Texas',
       value: 450000,
@@ -598,9 +614,9 @@
       health: 82
     };
 
-    // ============================================================
+    // ================================================================
     //  DOM REFS
-    // ============================================================
+    // ================================================================
     const authContainer = document.getElementById('authContainer');
     const appWrapper = document.getElementById('appWrapper');
     const loginEmail = document.getElementById('loginEmail');
@@ -611,7 +627,6 @@
     const logoutBtn = document.getElementById('logoutBtn');
     const userRoleBadge = document.getElementById('userRoleBadge');
 
-    // profile fields
     const locationDisplay = document.getElementById('locationDisplay');
     const valueDisplay = document.getElementById('valueDisplay');
     const mortgageDisplay = document.getElementById('mortgageDisplay');
@@ -630,10 +645,11 @@
     const activeHomesDisplay = document.getElementById('activeHomesDisplay');
     const mrrDisplay = document.getElementById('mrrDisplay');
     const planBadge = document.getElementById('planBadge');
+    const dbStatus = document.getElementById('dbStatus');
 
-    // ============================================================
-    //  RENDER FUNCTIONS
-    // ============================================================
+    // ================================================================
+    //  RENDER
+    // ================================================================
     function renderProfile() {
       const monthly = profile.mortgage + profile.insurance;
       locationDisplay.textContent = profile.location;
@@ -687,9 +703,9 @@
       }
     }
 
-    // ============================================================
-    //  AUTH (using Supabase table 'users')
-    // ============================================================
+    // ================================================================
+    //  AUTH — Supabase table "users"
+    // ================================================================
     async function login(email, password) {
       authError.classList.remove('show');
       if (!email || !password) {
@@ -698,8 +714,9 @@
         return;
       }
 
-      // if supabase is configured, query table
       let user = null;
+
+      // 1) Try Supabase
       if (supabase) {
         try {
           const { data, error } = await supabase
@@ -717,7 +734,7 @@
         }
       }
 
-      // fallback / local credentials (demo)
+      // 2) Fallback local demo credentials
       if (!user) {
         if (email === 'client@home.com' && password === 'client123') {
           user = { email: 'client@home.com', role: 'client' };
@@ -732,13 +749,20 @@
         return;
       }
 
-      // success
       currentUser = user;
       authContainer.style.display = 'none';
       appWrapper.classList.add('active');
-      // load profile from local storage (or default)
       loadFromLocal();
       updateUI();
+
+      // update db status
+      if (supabase) {
+        dbStatus.textContent = '✅ Supabase (users table)';
+        dbStatus.style.color = '#22c55e';
+      } else {
+        dbStatus.textContent = '⚡ local fallback';
+        dbStatus.style.color = '#eab308';
+      }
     }
 
     function logout() {
@@ -746,13 +770,13 @@
       authContainer.style.display = 'block';
       appWrapper.classList.remove('active');
       authError.classList.remove('show');
-      loginEmail.value = '';
-      loginPassword.value = '';
+      loginEmail.value = 'client@home.com';
+      loginPassword.value = 'client123';
     }
 
-    // ============================================================
-    //  LOCAL STORAGE (profile)
-    // ============================================================
+    // ================================================================
+    //  LOCAL STORAGE
+    // ================================================================
     function saveToLocal() {
       localStorage.setItem('homeProfile', JSON.stringify(profile));
     }
@@ -766,9 +790,9 @@
       }
     }
 
-    // ============================================================
+    // ================================================================
     //  UPDATE PROFILE
-    // ============================================================
+    // ================================================================
     function updateProfile() {
       const loc = locationInput.value.trim() || 'Texas';
       const val = parseFloat(valueInput.value) || 450000;
@@ -782,16 +806,16 @@
       renderProfile();
       updateRecommendations();
       saveToLocal();
-      // also save to supabase if admin? optional
+
       const btn = updateBtn;
-      const orig = btn.textContent;
+      const orig = btn.innerHTML;
       btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
       setTimeout(() => btn.innerHTML = orig, 1200);
     }
 
-    // ============================================================
+    // ================================================================
     //  EVENT LISTENERS
-    // ============================================================
+    // ================================================================
     loginBtn.addEventListener('click', () => {
       login(loginEmail.value.trim(), loginPassword.value.trim());
     });
@@ -803,36 +827,28 @@
     logoutBtn.addEventListener('click', logout);
     updateBtn.addEventListener('click', updateProfile);
 
-    // input enter
     document.querySelectorAll('#locationInput, #valueInput, #mortgageInput, #insuranceInput').forEach(inp => {
       inp.addEventListener('keypress', (e) => { if (e.key === 'Enter') updateProfile(); });
     });
 
-    // ============================================================
+    // ================================================================
     //  INIT
-    // ============================================================
-    // check if already logged in? skip for demo, start at login
+    // ================================================================
     authContainer.style.display = 'block';
     appWrapper.classList.remove('active');
+    loadFromLocal();
 
-    // set db status
-    const dbStatus = document.getElementById('dbStatus');
+    // show Supabase status
     if (supabase) {
-      dbStatus.textContent = '✅ Supabase (table: users)';
+      dbStatus.textContent = '✅ Supabase ready';
       dbStatus.style.color = '#22c55e';
     } else {
-      dbStatus.textContent = '⚡ local fallback (configure supabase)';
+      dbStatus.textContent = '⚡ local mode (set SUPABASE_URL & KEY)';
       dbStatus.style.color = '#eab308';
     }
 
-    // prefill demo credentials
-    loginEmail.value = 'client@home.com';
-    loginPassword.value = 'client123';
-
-    // load local profile for later
-    loadFromLocal();
-
-    console.log('🏠 AI Homeowner Assistant · login with client@home.com / client123  or  admin@home.com / admin123');
+    console.log('🏠 AI Homeowner Assistant · Login with client@home.com/client123 or admin@home.com/admin123');
+    console.log('📘 Supabase setup: create "users" table with id, email, password, role');
   </script>
 </body>
 </html>
