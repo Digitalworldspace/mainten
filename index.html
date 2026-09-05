@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🏠 AI Homeowner Assistant · Advanced Realistic</title>
+    <title>🏠 AI Homeowner Assistant · Advanced Pro</title>
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
     </script>
@@ -31,10 +31,10 @@
             margin: 0 auto;
         }
 
-        /* Login */
+        /* Login & Signup */
         .auth-container {
-            max-width: 440px;
-            margin: 60px auto;
+            max-width: 480px;
+            margin: 40px auto;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(16px);
             border-radius: 48px;
@@ -76,7 +76,8 @@
             margin-bottom: 6px;
             font-size: 0.9rem;
         }
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 14px 18px;
             border-radius: 40px;
@@ -86,7 +87,8 @@
             transition: 0.15s;
             outline: none;
         }
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             border-color: #3b82f6;
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
         }
@@ -113,6 +115,13 @@
             transform: scale(0.98);
         }
 
+        .auth-btn-secondary {
+            background: #3b82f6;
+        }
+        .auth-btn-secondary:hover {
+            background: #2563eb;
+        }
+
         .auth-error {
             background: #fee2e2;
             color: #991b1b;
@@ -128,15 +137,38 @@
             display: flex;
         }
 
-        .auth-extra {
+        .auth-switch {
             margin-top: 18px;
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #64748b;
         }
-        .auth-extra span {
+        .auth-switch a {
             color: #3b82f6;
-            font-weight: 500;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+        .password-toggle input {
+            padding-right: 50px;
+        }
+        .password-toggle .toggle-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 1.1rem;
         }
 
         /* Dashboard */
@@ -361,7 +393,6 @@
             margin-top: 8px;
         }
 
-        /* Reminder List */
         .reminder-item {
             display: flex;
             justify-content: space-between;
@@ -435,7 +466,6 @@
             text-decoration: line-through;
         }
 
-        /* Add Reminder Form */
         .add-reminder-form {
             display: flex;
             flex-wrap: wrap;
@@ -600,39 +630,88 @@
             margin-bottom: 12px;
             color: #d1d5db;
         }
+
+        .interest-rate-badge {
+            font-size: 0.8rem;
+            background: #ede9fe;
+            color: #5b21b6;
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-bar .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s;
+            background: linear-gradient(90deg, #3b82f6, #22c55e);
+        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
 
-        <!-- Login -->
+        <!-- Auth Container -->
         <div id="authContainer" class="auth-container">
             <div class="auth-logo">
                 <i class="fas fa-home"></i> HomeAssistant
-                <span style="font-size:0.7rem; background:#e2e8f0; padding:2px 14px; border-radius:40px;">login</span>
+                <span style="font-size:0.7rem; background:#e2e8f0; padding:2px 14px; border-radius:40px;" id="authModeLabel">Login</span>
             </div>
             <div class="auth-sub">
-                <i class="fas fa-database" style="color:#3b82f6;"></i> Advanced Realistic · Supabase ready
+                <i class="fas fa-shield-alt" style="color:#3b82f6;"></i> Secure · Your data is encrypted
             </div>
 
-            <div class="form-group">
-                <label><i class="fas fa-envelope" style="color:#64748b; margin-right:6px;"></i> Email</label>
-                <input type="email" id="loginEmail" placeholder="client@home.com" value="client@home.com" />
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-lock" style="color:#64748b; margin-right:6px;"></i> Password</label>
-                <input type="password" id="loginPassword" placeholder="••••••••" value="client123" />
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-envelope" style="color:#64748b; margin-right:6px;"></i> Email</label>
+                    <input type="email" id="loginEmail" placeholder="you@email.com" />
+                </div>
+                <div class="form-group password-toggle">
+                    <label><i class="fas fa-lock" style="color:#64748b; margin-right:6px;"></i> Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" />
+                    <button type="button" class="toggle-btn" onclick="togglePassword('loginPassword')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <button class="auth-btn" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
             </div>
 
-            <button class="auth-btn" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Sign in</button>
+            <!-- Signup Form -->
+            <div id="signupForm" style="display:none;">
+                <div class="form-group">
+                    <label><i class="fas fa-user" style="color:#64748b; margin-right:6px;"></i> Full Name</label>
+                    <input type="text" id="signupName" placeholder="John Doe" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope" style="color:#64748b; margin-right:6px;"></i> Email</label>
+                    <input type="email" id="signupEmail" placeholder="you@email.com" />
+                </div>
+                <div class="form-group password-toggle">
+                    <label><i class="fas fa-lock" style="color:#64748b; margin-right:6px;"></i> Password</label>
+                    <input type="password" id="signupPassword" placeholder="Min 6 characters" />
+                    <button type="button" class="toggle-btn" onclick="togglePassword('signupPassword')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <button class="auth-btn auth-btn-secondary" id="signupBtn"><i class="fas fa-user-plus"></i> Create Account</button>
+            </div>
 
             <div id="authError" class="auth-error">
-                <i class="fas fa-circle-exclamation"></i> <span id="errorText">Invalid credentials</span>
+                <i class="fas fa-circle-exclamation"></i> <span id="errorText">Error message</span>
             </div>
 
-            <div class="auth-extra">
-                <span>👤 client@home.com / client123</span> &nbsp;·&nbsp; <span>🛡️ admin@home.com / admin123</span>
+            <div class="auth-switch">
+                <span id="authSwitchText">Don't have an account?</span>
+                <a id="authSwitchLink">Sign Up</a>
             </div>
         </div>
 
@@ -643,10 +722,10 @@
             <div class="header">
                 <div class="logo">
                     <i class="fas fa-home"></i> HomeAssistant
-                    <span style="font-size:0.8rem; background:#dbeafe; padding:4px 14px; border-radius:40px; color:#1e4b8a;">Advanced</span>
+                    <span style="font-size:0.8rem; background:#dbeafe; padding:4px 14px; border-radius:40px; color:#1e4b8a;">Pro</span>
                 </div>
                 <div class="user-area">
-                    <span class="role-tag" id="userRoleBadge"><i class="fas fa-user"></i> Client</span>
+                    <span class="role-tag" id="userRoleBadge"><i class="fas fa-user"></i> <span id="userNameDisplay">User</span></span>
                     <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
             </div>
@@ -660,12 +739,12 @@
                 </div>
                 <div class="stat-card">
                     <div class="label"><i class="fas fa-dollar-sign"></i> Monthly Cost</div>
-                    <div class="value" id="statMonthlyCost">$3,240</div>
+                    <div class="value" id="statMonthlyCost">$3,560</div>
                     <span class="change positive"><i class="fas fa-arrow-up"></i> +2.1% YoY</span>
                 </div>
                 <div class="stat-card">
                     <div class="label"><i class="fas fa-piggy-bank"></i> Potential Savings</div>
-                    <div class="value" id="statSavings">$1,220</div>
+                    <div class="value" id="statSavings">$1,340</div>
                     <span class="change positive"><i class="fas fa-arrow-up"></i> / year</span>
                 </div>
                 <div class="stat-card">
@@ -698,13 +777,21 @@
                         <div class="row"><span class="label">🛡️ Insurance / mo</span><span class="highlight" id="insuranceDisplay">$210</span></div>
                         <div class="row"><span class="label">📊 Property Tax / mo</span><span class="highlight" id="taxDisplay">$480</span></div>
                         <div class="row"><span class="label">⚡ Utilities / mo</span><span class="highlight" id="utilitiesDisplay">$320</span></div>
+                        <div class="row">
+                            <span class="label">🏦 Bank Interest Rate</span>
+                            <span class="highlight" id="interestRateDisplay">6.75% <span class="interest-rate-badge">APR</span></span>
+                        </div>
                         <div class="row"><span class="label">📊 Total Monthly Cost</span><span class="highlight" id="monthlyCostDisplay">$3,560</span></div>
                         <div class="row"><span class="label">🏡 Home health</span><span class="highlight" id="healthDisplay">87/100 <i class="fas fa-heartbeat" style="color:#22c55e;"></i></span></div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="healthProgress" style="width:87%;"></div>
+                        </div>
                         <div class="input-group">
                             <input type="text" id="locationInput" placeholder="Location" value="Austin, TX" />
                             <input type="number" id="valueInput" placeholder="Value" value="485000" />
                             <input type="number" id="mortgageInput" placeholder="Mortgage" value="2550" />
                             <input type="number" id="insuranceInput" placeholder="Insurance" value="210" />
+                            <input type="number" id="interestInput" placeholder="Interest %" value="6.75" step="0.01" />
                             <button id="updateProfileBtn"><i class="fas fa-save"></i> Update</button>
                         </div>
                     </div>
@@ -740,7 +827,7 @@
                             <li><span class="rec-num">5</span> Install smart thermostat · Save $200/yr</li>
                         </ul>
                         <div style="margin-top:14px; background:#eef2ff; padding:10px 18px; border-radius:40px; display:inline-block; font-size:0.85rem;">
-                            <i class="fas fa-robot" style="color:#3b82f6;"></i> AI generated · Total potential savings: <strong>$1,340/yr</strong>
+                            <i class="fas fa-robot" style="color:#3b82f6;"></i> AI generated · Total potential savings: <strong id="totalSavingsDisplay">$1,340/yr</strong>
                         </div>
                     </div>
                 </div>
@@ -752,16 +839,16 @@
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fas fa-chart-pie"></i> Monthly Expenses</h3>
-                            <span class="badge-status badge-purple">$3,560 total</span>
+                            <span class="badge-status badge-purple" id="totalExpenseDisplay">$3,560 total</span>
                         </div>
                         <div class="chart-container">
                             <canvas id="expenseChart"></canvas>
                         </div>
                         <div style="display:flex; justify-content:space-around; margin-top:12px; font-size:0.8rem; flex-wrap:wrap; gap:8px;">
-                            <span><span style="background:#3b82f6; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Mortgage 72%</span>
-                            <span><span style="background:#eab308; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Insurance 6%</span>
-                            <span><span style="background:#22c55e; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Tax 13%</span>
-                            <span><span style="background:#8b5cf6; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Utilities 9%</span>
+                            <span><span style="background:#3b82f6; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Mortgage</span>
+                            <span><span style="background:#eab308; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Insurance</span>
+                            <span><span style="background:#22c55e; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Tax</span>
+                            <span><span style="background:#8b5cf6; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Utilities</span>
                         </div>
                     </div>
 
@@ -785,19 +872,19 @@
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fas fa-piggy-bank"></i> Savings Opportunities</h3>
-                            <span class="badge-status badge-green">$1,340/yr</span>
+                            <span class="badge-status badge-green" id="savingsTotalDisplay">$1,340/yr</span>
                         </div>
-                        <div class="row"><span class="label">🏷️ Insurance comparison</span><span class="highlight" style="color:#16a34a;">Save $480/year</span></div>
-                        <div class="row"><span class="label">📈 Mortgage refinance</span><span class="highlight" style="color:#16a34a;">Save $540/year</span></div>
+                        <div class="row"><span class="label">🏷️ Insurance comparison</span><span class="highlight" style="color:#16a34a;" id="savingInsurance">Save $480/year</span></div>
+                        <div class="row"><span class="label">📈 Mortgage refinance</span><span class="highlight" style="color:#16a34a;" id="savingMortgage">Save $540/year</span></div>
                         <div class="row"><span class="label">💡 Energy efficiency</span><span class="highlight" style="color:#16a34a;">Save $200/year</span></div>
                         <div class="row"><span class="label">🔧 Maintenance optimization</span><span class="highlight" style="color:#16a34a;">Save $120/year</span></div>
                         <div class="row" style="border-top: 2px solid #e2e8f0; margin-top:4px; padding-top:16px;">
                             <span class="label" style="font-weight:700;">📊 Total potential</span>
-                            <span class="highlight" style="color:#16a34a; font-size:1.2rem; font-weight:700;">$1,340/year</span>
+                            <span class="highlight" style="color:#16a34a; font-size:1.2rem; font-weight:700;" id="totalSavingsFinal">$1,340/year</span>
                         </div>
                     </div>
 
-                    <!-- Reminders System -->
+                    <!-- Reminders -->
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fas fa-bell"></i> My Reminders</h3>
@@ -809,8 +896,6 @@
                                 <p>No reminders yet. Add one below!</p>
                             </div>
                         </div>
-
-                        <!-- Add Reminder Form -->
                         <div class="add-reminder-form">
                             <input type="text" id="reminderTitle" placeholder="Reminder title" />
                             <input type="datetime-local" id="reminderDateTime" />
@@ -848,11 +933,12 @@
                 <span><i class="fas fa-database"></i> Supabase · <span id="dbStatus" style="color:#22c55e;">✅ connected</span></span>
                 <span><i class="fas fa-chart-simple"></i> Realistic calculations · Charts.js</span>
                 <span><i class="fas fa-bell"></i> Reminders with date & time</span>
+                <span><i class="fas fa-lock"></i> Your data is secure</span>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div id="toast" class="toast">
         <i class="fas fa-check-circle" style="color:#22c55e; margin-right:10px;"></i>
         <span id="toastMessage">Action completed!</span>
@@ -860,7 +946,7 @@
 
     <script>
         // ================================================================
-        //  SUPABASE CONFIG (optional)
+        //  SUPABASE CONFIG
         // ================================================================
         const SUPABASE_URL = 'https://your-project.supabase.co';
         const SUPABASE_ANON_KEY = 'your-anon-key';
@@ -877,6 +963,7 @@
         let currentUser = null;
         let reminders = [];
         let reminderIdCounter = 1;
+        let isLoginMode = true;
 
         let profile = {
             location: 'Austin, TX',
@@ -885,7 +972,8 @@
             insurance: 210,
             tax: 480,
             utilities: 320,
-            health: 87
+            health: 87,
+            interestRate: 6.75
         };
 
         let chartInstances = {};
@@ -895,13 +983,24 @@
         // ================================================================
         const authContainer = document.getElementById('authContainer');
         const dashboard = document.getElementById('dashboard');
+        const authModeLabel = document.getElementById('authModeLabel');
+
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
         const loginEmail = document.getElementById('loginEmail');
         const loginPassword = document.getElementById('loginPassword');
         const loginBtn = document.getElementById('loginBtn');
+        const signupName = document.getElementById('signupName');
+        const signupEmail = document.getElementById('signupEmail');
+        const signupPassword = document.getElementById('signupPassword');
+        const signupBtn = document.getElementById('signupBtn');
         const authError = document.getElementById('authError');
         const errorText = document.getElementById('errorText');
+        const authSwitchText = document.getElementById('authSwitchText');
+        const authSwitchLink = document.getElementById('authSwitchLink');
         const logoutBtn = document.getElementById('logoutBtn');
         const userRoleBadge = document.getElementById('userRoleBadge');
+        const userNameDisplay = document.getElementById('userNameDisplay');
 
         const locationDisplay = document.getElementById('locationDisplay');
         const valueDisplay = document.getElementById('valueDisplay');
@@ -909,13 +1008,16 @@
         const insuranceDisplay = document.getElementById('insuranceDisplay');
         const taxDisplay = document.getElementById('taxDisplay');
         const utilitiesDisplay = document.getElementById('utilitiesDisplay');
+        const interestRateDisplay = document.getElementById('interestRateDisplay');
         const monthlyCostDisplay = document.getElementById('monthlyCostDisplay');
         const healthDisplay = document.getElementById('healthDisplay');
+        const healthProgress = document.getElementById('healthProgress');
 
         const locationInput = document.getElementById('locationInput');
         const valueInput = document.getElementById('valueInput');
         const mortgageInput = document.getElementById('mortgageInput');
         const insuranceInput = document.getElementById('insuranceInput');
+        const interestInput = document.getElementById('interestInput');
         const updateBtn = document.getElementById('updateProfileBtn');
 
         const statHomeValue = document.getElementById('statHomeValue');
@@ -943,6 +1045,12 @@
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
 
+        const totalExpenseDisplay = document.getElementById('totalExpenseDisplay');
+        const savingsTotalDisplay = document.getElementById('savingsTotalDisplay');
+        const totalSavingsFinal = document.getElementById('totalSavingsFinal');
+        const savingInsurance = document.getElementById('savingInsurance');
+        const savingMortgage = document.getElementById('savingMortgage');
+
         // ================================================================
         //  TOAST
         // ================================================================
@@ -952,6 +1060,45 @@
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
+
+        // ================================================================
+        //  PASSWORD TOGGLE
+        // ================================================================
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const toggle = input.parentElement.querySelector('.toggle-btn i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                toggle.className = 'fas fa-eye';
+            }
+        }
+
+        // ================================================================
+        //  AUTH SWITCH
+        // ================================================================
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            if (isLoginMode) {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                authModeLabel.textContent = 'Login';
+                authSwitchText.textContent = "Don't have an account?";
+                authSwitchLink.textContent = 'Sign Up';
+                authError.classList.remove('show');
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                authModeLabel.textContent = 'Sign Up';
+                authSwitchText.textContent = "Already have an account?";
+                authSwitchLink.textContent = 'Sign In';
+                authError.classList.remove('show');
+            }
+        }
+
+        authSwitchLink.addEventListener('click', toggleAuthMode);
 
         // ================================================================
         //  REMINDER FUNCTIONS
@@ -968,7 +1115,6 @@
                 return;
             }
 
-            // Sort by date (soonest first)
             const sorted = [...reminders].sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
 
             let html = '';
@@ -1013,7 +1159,6 @@
             reminderList.innerHTML = html;
             reminderCount.textContent = `${activeCount} active · ${reminders.length} total`;
 
-            // Event listeners for complete/delete buttons
             document.querySelectorAll('.complete-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const id = parseInt(this.dataset.id);
@@ -1028,7 +1173,6 @@
                 });
             });
 
-            // Update task count
             statTasks.textContent = activeCount;
         }
 
@@ -1040,12 +1184,14 @@
                 priority: priority || 'medium',
                 description: description || '',
                 completed: false,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                userId: currentUser ? currentUser.id : null
             };
             reminders.push(newReminder);
             renderReminders();
             showToast('✅ Reminder added successfully!');
             saveRemindersToLocal();
+            if (supabase) saveRemindersToSupabase();
         }
 
         function completeReminder(id) {
@@ -1055,6 +1201,7 @@
                 renderReminders();
                 showToast('✅ Reminder completed!');
                 saveRemindersToLocal();
+                if (supabase) saveRemindersToSupabase();
             }
         }
 
@@ -1063,19 +1210,23 @@
             renderReminders();
             showToast('🗑️ Reminder deleted');
             saveRemindersToLocal();
+            if (supabase) saveRemindersToSupabase();
         }
 
         // ================================================================
-        //  REMINDER LOCAL STORAGE
+        //  REMINDER STORAGE
         // ================================================================
         function saveRemindersToLocal() {
-            localStorage.setItem('reminders', JSON.stringify(reminders));
-            localStorage.setItem('reminderIdCounter', reminderIdCounter.toString());
+            localStorage.setItem('reminders_' + (currentUser ? currentUser.id : 'default'), JSON.stringify(reminders));
+            localStorage.setItem('reminderIdCounter_' + (currentUser ? currentUser.id : 'default'), reminderIdCounter
+            .toString());
         }
 
         function loadRemindersFromLocal() {
-            const stored = localStorage.getItem('reminders');
-            const storedCounter = localStorage.getItem('reminderIdCounter');
+            const key = 'reminders_' + (currentUser ? currentUser.id : 'default');
+            const counterKey = 'reminderIdCounter_' + (currentUser ? currentUser.id : 'default');
+            const stored = localStorage.getItem(key);
+            const storedCounter = localStorage.getItem(counterKey);
             if (stored) {
                 try {
                     reminders = JSON.parse(stored);
@@ -1084,7 +1235,6 @@
                     }
                 } catch (e) {}
             }
-            // If no reminders, add sample data
             if (reminders.length === 0) {
                 const now = new Date();
                 reminders = [{
@@ -1095,7 +1245,8 @@
                     priority: 'high',
                     description: 'Review and renew home insurance policy',
                     completed: false,
-                    createdAt: new Date().toISOString()
+                    createdAt: new Date().toISOString(),
+                    userId: currentUser ? currentUser.id : null
                 }, {
                     id: reminderIdCounter++,
                     title: 'HVAC Maintenance',
@@ -1104,7 +1255,8 @@
                     priority: 'high',
                     description: 'Schedule annual HVAC service',
                     completed: false,
-                    createdAt: new Date().toISOString()
+                    createdAt: new Date().toISOString(),
+                    userId: currentUser ? currentUser.id : null
                 }, {
                     id: reminderIdCounter++,
                     title: 'Property Tax Payment',
@@ -1113,29 +1265,63 @@
                     priority: 'medium',
                     description: 'Pay annual property tax bill',
                     completed: false,
-                    createdAt: new Date().toISOString()
-                }, {
-                    id: reminderIdCounter++,
-                    title: 'Gutter Cleaning',
-                    dateTime: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 8, 8, 0)
-                        .toISOString(),
-                    priority: 'medium',
-                    description: 'Clean gutters before winter',
-                    completed: false,
-                    createdAt: new Date().toISOString()
-                }, {
-                    id: reminderIdCounter++,
-                    title: 'Lawn Winter Prep',
-                    dateTime: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3, 16, 0)
-                        .toISOString(),
-                    priority: 'low',
-                    description: 'Prepare lawn for winter',
-                    completed: false,
-                    createdAt: new Date().toISOString()
+                    createdAt: new Date().toISOString(),
+                    userId: currentUser ? currentUser.id : null
                 }];
                 saveRemindersToLocal();
             }
             renderReminders();
+        }
+
+        async function saveRemindersToSupabase() {
+            if (!supabase || !currentUser) return;
+            try {
+                // Delete existing reminders for this user
+                await supabase.from('reminders').delete().eq('user_id', currentUser.id);
+                // Insert all reminders
+                for (const reminder of reminders) {
+                    await supabase.from('reminders').insert({
+                        user_id: currentUser.id,
+                        title: reminder.title,
+                        date_time: reminder.dateTime,
+                        priority: reminder.priority,
+                        description: reminder.description,
+                        completed: reminder.completed,
+                        created_at: reminder.createdAt
+                    });
+                }
+            } catch (e) {
+                console.warn('Supabase reminders save error:', e);
+            }
+        }
+
+        async function loadRemindersFromSupabase() {
+            if (!supabase || !currentUser) return;
+            try {
+                const { data, error } = await supabase
+                    .from('reminders')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('date_time', { ascending: true });
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    reminders = data.map(r => ({
+                        id: reminderIdCounter++,
+                        title: r.title,
+                        dateTime: r.date_time,
+                        priority: r.priority,
+                        description: r.description || '',
+                        completed: r.completed || false,
+                        createdAt: r.created_at || new Date().toISOString(),
+                        userId: r.user_id
+                    }));
+                    renderReminders();
+                    saveRemindersToLocal();
+                }
+            } catch (e) {
+                console.warn('Supabase reminders load error:', e);
+                loadRemindersFromLocal();
+            }
         }
 
         // ================================================================
@@ -1143,45 +1329,63 @@
         // ================================================================
         function renderProfile() {
             const monthly = profile.mortgage + profile.insurance + profile.tax + profile.utilities;
+            const totalExpense = monthly;
+            const totalSavings = Math.round(profile.insurance * 2.2 + profile.utilities * 0.3 + profile.mortgage * 0.02 *
+            12);
+
             locationDisplay.textContent = profile.location;
             valueDisplay.textContent = `$${profile.value.toLocaleString()}`;
             mortgageDisplay.textContent = `$${profile.mortgage.toLocaleString()}`;
             insuranceDisplay.textContent = `$${profile.insurance.toLocaleString()}`;
             taxDisplay.textContent = `$${profile.tax.toLocaleString()}`;
             utilitiesDisplay.textContent = `$${profile.utilities.toLocaleString()}`;
-            monthlyCostDisplay.textContent = `$${monthly.toLocaleString()}`;
+            interestRateDisplay.innerHTML = `${profile.interestRate}% <span class="interest-rate-badge">APR</span>`;
+            monthlyCostDisplay.textContent = `$${totalExpense.toLocaleString()}`;
             healthDisplay.innerHTML = `${profile.health}/100 <i class="fas fa-heartbeat" style="color:#22c55e;"></i>`;
+            healthProgress.style.width = profile.health + '%';
 
             statHomeValue.textContent = `$${profile.value.toLocaleString()}`;
-            statMonthlyCost.textContent = `$${monthly.toLocaleString()}`;
-            statSavings.textContent = `$${Math.round(profile.insurance * 2.2 + profile.utilities * 0.3)}`;
+            statMonthlyCost.textContent = `$${totalExpense.toLocaleString()}`;
+            statSavings.textContent = `$${totalSavings}`;
             statHealth.textContent = profile.health;
+
+            totalExpenseDisplay.textContent = `$${totalExpense.toLocaleString()} total`;
+            savingsTotalDisplay.textContent = `$${totalSavings}/yr`;
+            totalSavingsFinal.textContent = `$${totalSavings}/year`;
+
+            const insuranceSavings = Math.round(profile.insurance * 2.2);
+            const mortgageSavings = Math.round(profile.mortgage * 0.02 * 12);
+            savingInsurance.textContent = `Save $${insuranceSavings}/year`;
+            savingMortgage.textContent = `Save $${mortgageSavings}/year`;
 
             locationInput.value = profile.location;
             valueInput.value = profile.value;
             mortgageInput.value = profile.mortgage;
             insuranceInput.value = profile.insurance;
+            interestInput.value = profile.interestRate;
 
             updateCharts();
         }
 
         function updateRecommendations() {
-            const savings = Math.round(profile.insurance * 2.2 + profile.utilities * 0.3 + profile.mortgage * 0.02 * 12);
+            const insuranceSavings = Math.round(profile.insurance * 2.2);
+            const mortgageSavings = Math.round(profile.mortgage * 0.02 * 12);
+            const totalSavings = insuranceSavings + mortgageSavings + 200 + 120;
+
             const recs = [
                 `Schedule HVAC maintenance ($250) · Save $120/yr`,
-                `Compare insurance rates · Save $${Math.round(profile.insurance * 2.2)}/yr`,
+                `Compare insurance rates · Save $${insuranceSavings}/yr`,
                 `Clean gutters before winter ($120)`,
-                `Request mortgage refinance quote · Save $${Math.round(profile.mortgage * 0.02 * 12)}/yr`,
+                `Request mortgage refinance quote · Save $${mortgageSavings}/yr`,
                 `Install smart thermostat · Save $200/yr`
             ];
-            if (profile.insurance > 200) recs.splice(1, 0, 'Shop for cheaper insurance');
-            if (profile.mortgage > 2500) recs.splice(3, 0, 'Consider mortgage refinance');
-            while (recs.length > 5) recs.pop();
 
             const list = document.getElementById('recommendationList');
             list.innerHTML = recs.map((text, idx) =>
                 `<li><span class="rec-num">${idx+1}</span> ${text}</li>`
             ).join('');
+
+            document.getElementById('totalSavingsDisplay').textContent = `$${totalSavings}/yr`;
         }
 
         function renderAdminPanel() {
@@ -1195,7 +1399,10 @@
                 userRoleBadge.innerHTML = `<i class="fas fa-user-shield"></i> Admin`;
             } else {
                 adminPanel.style.display = 'none';
-                userRoleBadge.innerHTML = `<i class="fas fa-user"></i> Client`;
+                userRoleBadge.innerHTML = `<i class="fas fa-user"></i> ${currentUser ? currentUser.name || 'User' : 'User'}`;
+            }
+            if (currentUser && currentUser.name) {
+                userNameDisplay.textContent = currentUser.name;
             }
         }
 
@@ -1292,13 +1499,13 @@
                 try {
                     const { data, error } = await supabase
                         .from('users')
-                        .select('email, role')
+                        .select('id, email, name, role')
                         .eq('email', email)
                         .eq('password', password)
                         .maybeSingle();
                     if (error) throw error;
                     if (data) {
-                        user = { email: data.email, role: data.role || 'client' };
+                        user = { id: data.id, email: data.email, name: data.name || 'User', role: data.role || 'client' };
                     }
                 } catch (e) {
                     console.warn('Supabase error, fallback to local', e);
@@ -1306,10 +1513,11 @@
             }
 
             if (!user) {
-                if (email === 'client@home.com' && password === 'client123') {
-                    user = { email: 'client@home.com', role: 'client' };
-                } else if (email === 'admin@home.com' && password === 'admin123') {
-                    user = { email: 'admin@home.com', role: 'admin' };
+                // Fallback: check local users
+                const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+                const found = localUsers.find(u => u.email === email && u.password === password);
+                if (found) {
+                    user = { id: found.id, email: found.email, name: found.name, role: found.role || 'client' };
                 }
             }
 
@@ -1323,13 +1531,12 @@
             authContainer.style.display = 'none';
             dashboard.classList.add('active');
             loadFromLocal();
-            loadRemindersFromLocal();
+            await loadRemindersFromSupabase();
             renderProfile();
             updateRecommendations();
             renderAdminPanel();
             initCharts();
 
-            // Set default datetime for reminder form
             const now = new Date();
             const localDatetime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
                 .toISOString()
@@ -1344,7 +1551,97 @@
                 dbStatus.style.color = '#eab308';
             }
 
-            showToast('👋 Welcome back, ' + user.email.split('@')[0] + '!');
+            showToast('👋 Welcome back, ' + user.name + '!');
+        }
+
+        async function signup(name, email, password) {
+            authError.classList.remove('show');
+            if (!name || !email || !password) {
+                errorText.textContent = 'Please fill in all fields.';
+                authError.classList.add('show');
+                return;
+            }
+            if (password.length < 6) {
+                errorText.textContent = 'Password must be at least 6 characters.';
+                authError.classList.add('show');
+                return;
+            }
+
+            let user = null;
+            let userId = 'user_' + Date.now();
+
+            if (supabase) {
+                try {
+                    // Check if user exists
+                    const { data: existing } = await supabase
+                        .from('users')
+                        .select('id')
+                        .eq('email', email)
+                        .maybeSingle();
+
+                    if (existing) {
+                        errorText.textContent = 'Email already registered. Please sign in.';
+                        authError.classList.add('show');
+                        return;
+                    }
+
+                    const { data, error } = await supabase
+                        .from('users')
+                        .insert({ email, password, name, role: 'client' })
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+                    if (data) {
+                        user = { id: data.id, email: data.email, name: data.name || name, role: data.role || 'client' };
+                    }
+                } catch (e) {
+                    console.warn('Supabase signup error, using local', e);
+                }
+            }
+
+            // Fallback: local storage
+            if (!user) {
+                const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+                if (localUsers.find(u => u.email === email)) {
+                    errorText.textContent = 'Email already registered. Please sign in.';
+                    authError.classList.add('show');
+                    return;
+                }
+                user = { id: userId, email, name, password, role: 'client' };
+                localUsers.push(user);
+                localStorage.setItem('localUsers', JSON.stringify(localUsers));
+            }
+
+            currentUser = user;
+            authContainer.style.display = 'none';
+            dashboard.classList.add('active');
+
+            // Initialize profile for new user
+            profile = {
+                location: 'Austin, TX',
+                value: 485000,
+                mortgage: 2550,
+                insurance: 210,
+                tax: 480,
+                utilities: 320,
+                health: 87,
+                interestRate: 6.75
+            };
+            reminders = [];
+            saveToLocal();
+            renderProfile();
+            updateRecommendations();
+            renderAdminPanel();
+            initCharts();
+
+            const now = new Date();
+            const localDatetime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            reminderDateTime.value = localDatetime;
+
+            showToast('🎉 Account created successfully! Welcome ' + name + '!');
         }
 
         function logout() {
@@ -1352,8 +1649,8 @@
             authContainer.style.display = 'block';
             dashboard.classList.remove('active');
             authError.classList.remove('show');
-            loginEmail.value = 'client@home.com';
-            loginPassword.value = 'client123';
+            loginEmail.value = '';
+            loginPassword.value = '';
             showToast('👋 Logged out successfully');
         }
 
@@ -1361,11 +1658,11 @@
         //  LOCAL STORAGE
         // ================================================================
         function saveToLocal() {
-            localStorage.setItem('homeProfile', JSON.stringify(profile));
+            localStorage.setItem('profile_' + (currentUser ? currentUser.id : 'default'), JSON.stringify(profile));
         }
 
         function loadFromLocal() {
-            const stored = localStorage.getItem('homeProfile');
+            const stored = localStorage.getItem('profile_' + (currentUser ? currentUser.id : 'default'));
             if (stored) {
                 try {
                     const parsed = JSON.parse(stored);
@@ -1382,19 +1679,37 @@
             const val = parseFloat(valueInput.value) || 485000;
             const mort = parseFloat(mortgageInput.value) || 2550;
             const ins = parseFloat(insuranceInput.value) || 210;
+            const interest = parseFloat(interestInput.value) || 6.75;
 
             profile.location = loc;
             profile.value = val;
             profile.mortgage = mort;
             profile.insurance = ins;
-            profile.tax = Math.round(val * 0.012 / 12); // 1.2% property tax
+            profile.interestRate = interest;
+            profile.tax = Math.round(val * 0.012 / 12);
             profile.utilities = Math.round(320 + (val - 400000) * 0.0003);
             profile.health = Math.min(100, Math.round(80 + (val - 300000) / 50000 + (ins < 200 ? 5 : 0) - (profile
-            .utilities > 400 ? 3 : 0)));
+                .utilities > 400 ? 3 : 0) - (interest > 7 ? 5 : 0)));
 
             renderProfile();
             updateRecommendations();
             saveToLocal();
+
+            // Save to Supabase if available
+            if (supabase && currentUser) {
+                supabase.from('home_profiles').upsert({
+                    user_id: currentUser.id,
+                    location: profile.location,
+                    value: profile.value,
+                    mortgage: profile.mortgage,
+                    insurance: profile.insurance,
+                    tax: profile.tax,
+                    utilities: profile.utilities,
+                    health: profile.health,
+                    interest_rate: profile.interestRate
+                }).then(() => {});
+            }
+
             showToast('✅ Profile updated successfully!');
         }
 
@@ -1405,18 +1720,27 @@
             login(loginEmail.value.trim(), loginPassword.value.trim());
         });
 
+        signupBtn.addEventListener('click', () => {
+            signup(signupName.value.trim(), signupEmail.value.trim(), signupPassword.value.trim());
+        });
+
         document.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && authContainer.style.display !== 'none') {
-                login(loginEmail.value.trim(), loginPassword.value.trim());
+                if (isLoginMode) {
+                    login(loginEmail.value.trim(), loginPassword.value.trim());
+                } else {
+                    signup(signupName.value.trim(), signupEmail.value.trim(), signupPassword.value.trim());
+                }
             }
         });
 
         logoutBtn.addEventListener('click', logout);
         updateBtn.addEventListener('click', updateProfile);
 
-        document.querySelectorAll('#locationInput, #valueInput, #mortgageInput, #insuranceInput').forEach(inp => {
-            inp.addEventListener('keypress', (e) => { if (e.key === 'Enter') updateProfile(); });
-        });
+        document.querySelectorAll('#locationInput, #valueInput, #mortgageInput, #insuranceInput, #interestInput').forEach(
+            inp => {
+                inp.addEventListener('keypress', (e) => { if (e.key === 'Enter') updateProfile(); });
+            });
 
         // Add Reminder
         addReminderBtn.addEventListener('click', () => {
@@ -1444,7 +1768,6 @@
             reminderDateTime.value = localDatetime;
         });
 
-        // Enter key for reminder title
         reminderTitle.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 addReminderBtn.click();
@@ -1456,15 +1779,19 @@
         // ================================================================
         authContainer.style.display = 'block';
         dashboard.classList.remove('active');
-        loadFromLocal();
 
-        console.log('🏠 AI Homeowner Assistant · Advanced Realistic');
+        console.log('🏠 AI Homeowner Assistant · Advanced Pro');
         console.log('📊 Charts powered by Chart.js');
         console.log('⏰ Reminders with date & time');
-        console.log('👤 Login: client@home.com / client123  |  admin@home.com / admin123');
+        console.log('🏦 Bank interest rates included');
+        console.log('🔐 Sign up and login with Supabase');
 
-        // Auto-login for demo (remove for production)
-        // setTimeout(() => login('client@home.com', 'client123'), 300);
+        // Set default datetime
+        const now = new Date();
+        const localDatetime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+            .toISOString()
+            .slice(0, 16);
+        if (reminderDateTime) reminderDateTime.value = localDatetime;
     </script>
 </body>
 </html>
