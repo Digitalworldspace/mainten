@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🏠 AI Homeowner Assistant · Realistic Dashboard</title>
+    <title>🏠 AI Homeowner Assistant · Advanced Realistic</title>
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
     </script>
-    <!-- Chart.js for charts -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
     </script>
-    <!-- Font Awesome 6 -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * {
@@ -31,7 +31,7 @@
             margin: 0 auto;
         }
 
-        /* ---------- LOGIN ---------- */
+        /* Login */
         .auth-container {
             max-width: 440px;
             margin: 60px auto;
@@ -139,7 +139,7 @@
             font-weight: 500;
         }
 
-        /* ---------- DASHBOARD ---------- */
+        /* Dashboard */
         .dashboard {
             display: none;
         }
@@ -147,7 +147,6 @@
             display: block;
         }
 
-        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -206,7 +205,7 @@
             background: #f1f5f9;
         }
 
-        /* Stats Cards */
+        /* Stats */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -221,6 +220,11 @@
             padding: 20px 24px;
             border: 1px solid rgba(255, 255, 255, 0.6);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            transition: 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
         }
 
         .stat-card .label {
@@ -252,8 +256,12 @@
             background: #fee2e2;
             color: #991b1b;
         }
+        .change.neutral {
+            background: #f1f5f9;
+            color: #475569;
+        }
 
-        /* Main Grid */
+        /* Grid */
         .grid-2col {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -272,6 +280,10 @@
             padding: 24px 26px;
             border: 1px solid rgba(255, 255, 255, 0.6);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
+            transition: 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.04);
         }
 
         .card-header {
@@ -279,6 +291,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .card-header h3 {
             font-size: 1.1rem;
@@ -320,6 +334,10 @@
             background: #ede9fe;
             color: #5b21b6;
         }
+        .badge-orange {
+            background: #ffedd5;
+            color: #9a3412;
+        }
 
         .row {
             display: flex;
@@ -341,6 +359,128 @@
         .chart-container {
             height: 200px;
             margin-top: 8px;
+        }
+
+        /* Reminder List */
+        .reminder-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            transition: 0.15s;
+        }
+        .reminder-item:last-child {
+            border-bottom: none;
+        }
+        .reminder-item .reminder-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .reminder-item .reminder-title {
+            font-weight: 600;
+            color: #0b1e33;
+        }
+        .reminder-item .reminder-meta {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .reminder-item .reminder-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .reminder-item .reminder-actions button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 20px;
+            transition: 0.15s;
+            font-size: 0.85rem;
+        }
+        .reminder-item .reminder-actions .complete-btn {
+            color: #22c55e;
+        }
+        .reminder-item .reminder-actions .complete-btn:hover {
+            background: #dcfce7;
+        }
+        .reminder-item .reminder-actions .delete-btn {
+            color: #ef4444;
+        }
+        .reminder-item .reminder-actions .delete-btn:hover {
+            background: #fee2e2;
+        }
+        .reminder-item .reminder-priority {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .priority-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .priority-medium {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+        .priority-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .reminder-completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        /* Add Reminder Form */
+        .add-reminder-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 20px;
+        }
+        .add-reminder-form input,
+        .add-reminder-form select,
+        .add-reminder-form textarea {
+            padding: 10px 16px;
+            border-radius: 40px;
+            border: 1.5px solid #e2e8f0;
+            background: white;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 120px;
+            outline: none;
+        }
+        .add-reminder-form input:focus,
+        .add-reminder-form select:focus,
+        .add-reminder-form textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .add-reminder-form textarea {
+            flex-basis: 100%;
+            border-radius: 20px;
+            resize: vertical;
+            min-height: 60px;
+        }
+        .add-reminder-form button {
+            padding: 10px 24px;
+            border-radius: 40px;
+            border: none;
+            background: #0b1e33;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .add-reminder-form button:hover {
+            background: #1e3a5f;
         }
 
         .rec-list {
@@ -431,13 +571,34 @@
             display: none !important;
         }
 
-        .toast-msg {
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
             background: #0b1e33;
             color: white;
-            padding: 8px 20px;
+            padding: 16px 24px;
             border-radius: 60px;
-            font-size: 0.85rem;
-            display: inline-block;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: 0.3s;
+            z-index: 1000;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #94a3b8;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            color: #d1d5db;
         }
     </style>
 </head>
@@ -445,14 +606,14 @@
 
     <div class="app-container">
 
-        <!-- ==================== LOGIN ==================== -->
+        <!-- Login -->
         <div id="authContainer" class="auth-container">
             <div class="auth-logo">
                 <i class="fas fa-home"></i> HomeAssistant
                 <span style="font-size:0.7rem; background:#e2e8f0; padding:2px 14px; border-radius:40px;">login</span>
             </div>
             <div class="auth-sub">
-                <i class="fas fa-database" style="color:#3b82f6;"></i> Realistic data · Supabase ready
+                <i class="fas fa-database" style="color:#3b82f6;"></i> Advanced Realistic · Supabase ready
             </div>
 
             <div class="form-group">
@@ -475,14 +636,14 @@
             </div>
         </div>
 
-        <!-- ==================== DASHBOARD ==================== -->
+        <!-- Dashboard -->
         <div id="dashboard" class="dashboard">
 
             <!-- Header -->
             <div class="header">
                 <div class="logo">
                     <i class="fas fa-home"></i> HomeAssistant
-                    <span style="font-size:0.8rem; background:#dbeafe; padding:4px 14px; border-radius:40px; color:#1e4b8a;">Realistic</span>
+                    <span style="font-size:0.8rem; background:#dbeafe; padding:4px 14px; border-radius:40px; color:#1e4b8a;">Advanced</span>
                 </div>
                 <div class="user-area">
                     <span class="role-tag" id="userRoleBadge"><i class="fas fa-user"></i> Client</span>
@@ -490,7 +651,7 @@
                 </div>
             </div>
 
-            <!-- Stats Row -->
+            <!-- Stats -->
             <div class="stats-grid" id="statsGrid">
                 <div class="stat-card">
                     <div class="label"><i class="fas fa-home"></i> Home Value</div>
@@ -504,13 +665,18 @@
                 </div>
                 <div class="stat-card">
                     <div class="label"><i class="fas fa-piggy-bank"></i> Potential Savings</div>
-                    <div class="value" id="statSavings">$480</div>
+                    <div class="value" id="statSavings">$1,220</div>
                     <span class="change positive"><i class="fas fa-arrow-up"></i> / year</span>
                 </div>
                 <div class="stat-card">
                     <div class="label"><i class="fas fa-heartbeat"></i> Home Health</div>
                     <div class="value" id="statHealth">87</div>
                     <span class="change positive"><i class="fas fa-arrow-up"></i> +5 points</span>
+                </div>
+                <div class="stat-card">
+                    <div class="label"><i class="fas fa-clock"></i> Upcoming Tasks</div>
+                    <div class="value" id="statTasks">7</div>
+                    <span class="change neutral"><i class="fas fa-calendar"></i> This month</span>
                 </div>
             </div>
 
@@ -531,7 +697,8 @@
                         <div class="row"><span class="label">📆 Mortgage / mo</span><span class="highlight" id="mortgageDisplay">$2,550</span></div>
                         <div class="row"><span class="label">🛡️ Insurance / mo</span><span class="highlight" id="insuranceDisplay">$210</span></div>
                         <div class="row"><span class="label">📊 Property Tax / mo</span><span class="highlight" id="taxDisplay">$480</span></div>
-                        <div class="row"><span class="label">📊 Total Monthly Cost</span><span class="highlight" id="monthlyCostDisplay">$3,240</span></div>
+                        <div class="row"><span class="label">⚡ Utilities / mo</span><span class="highlight" id="utilitiesDisplay">$320</span></div>
+                        <div class="row"><span class="label">📊 Total Monthly Cost</span><span class="highlight" id="monthlyCostDisplay">$3,560</span></div>
                         <div class="row"><span class="label">🏡 Home health</span><span class="highlight" id="healthDisplay">87/100 <i class="fas fa-heartbeat" style="color:#22c55e;"></i></span></div>
                         <div class="input-group">
                             <input type="text" id="locationInput" placeholder="Location" value="Austin, TX" />
@@ -552,63 +719,53 @@
                         <div class="row"><span class="label">🟡 Maintenance</span><span class="highlight">HVAC service recommended (est. $250)</span></div>
                         <div class="row"><span class="label">📅 Upcoming</span><span class="highlight">Property tax payment (Dec 15) · $4,800</span></div>
                         <div class="row"><span class="label">💡 Tip</span><span class="highlight">Set aside $200/month for annual maintenance</span></div>
-                        <div style="margin-top:12px;">
-                            <span class="badge-status badge-yellow"><i class="fas fa-clock"></i> Next: HVAC filter check (due in 5 days)</span>
-                            <span class="badge-status badge-blue" style="margin-left:8px;">Gutter cleaning (15 days)</span>
+                        <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;">
+                            <span class="badge-status badge-yellow"><i class="fas fa-clock"></i> HVAC filter (5 days)</span>
+                            <span class="badge-status badge-blue">Gutter cleaning (15 days)</span>
+                            <span class="badge-status badge-orange">Roof inspection (30 days)</span>
                         </div>
                     </div>
 
-                    <!-- Reminders -->
-                    <div class="card">
+                    <!-- AI Recommendations -->
+                    <div class="card" style="background: linear-gradient(145deg, #f0f7ff, #ffffff); border-left: 5px solid #3b82f6;">
                         <div class="card-header">
-                            <h3><i class="fas fa-bell"></i> Reminders</h3>
-                            <span class="badge-status badge-red">2 urgent</span>
+                            <h3><i class="fas fa-lightbulb" style="color:#eab308;"></i> ⭐ AI Recommendations</h3>
+                            <span class="badge-status badge-blue" style="background:#3b82f6; color:white;">Smart</span>
                         </div>
-                        <div class="row"><span class="label"><i class="fas fa-file-signature" style="color:#3b82f6;"></i> Insurance renewal</span><span class="highlight">Dec 12, 2026 · Premium $2,520/yr</span></div>
-                        <div class="row"><span class="label"><i class="fas fa-tools" style="color:#eab308;"></i> HVAC service</span><span class="highlight">Recommended this month · $250</span></div>
-                        <div class="row"><span class="label"><i class="fas fa-hand-holding-usd" style="color:#22c55e;"></i> Mortgage review</span><span class="highlight">Rate check: 5.75% (could save $45/mo)</span></div>
-                        <div class="row"><span class="label"><i class="fas fa-tree" style="color:#16a34a;"></i> Lawn care</span><span class="highlight">Winter prep due · $120</span></div>
+                        <ul class="rec-list" id="recommendationList">
+                            <li><span class="rec-num">1</span> Schedule HVAC maintenance ($250) · Save $120/yr</li>
+                            <li><span class="rec-num">2</span> Compare insurance rates · Save $480/yr</li>
+                            <li><span class="rec-num">3</span> Clean gutters before winter ($120)</li>
+                            <li><span class="rec-num">4</span> Request mortgage refinance quote · Save $540/yr</li>
+                            <li><span class="rec-num">5</span> Install smart thermostat · Save $200/yr</li>
+                        </ul>
+                        <div style="margin-top:14px; background:#eef2ff; padding:10px 18px; border-radius:40px; display:inline-block; font-size:0.85rem;">
+                            <i class="fas fa-robot" style="color:#3b82f6;"></i> AI generated · Total potential savings: <strong>$1,340/yr</strong>
+                        </div>
                     </div>
                 </div>
 
                 <!-- RIGHT COLUMN -->
                 <div style="display:flex; flex-direction:column; gap:28px;">
 
-                    <!-- AI Action Plan -->
-                    <div class="card" style="background: linear-gradient(145deg, #f0f7ff, #ffffff); border-left: 5px solid #3b82f6;">
-                        <div class="card-header">
-                            <h3><i class="fas fa-lightbulb" style="color:#eab308;"></i> ⭐ What should I do this month?</h3>
-                            <span class="badge-status badge-blue" style="background:#3b82f6; color:white;">AI plan</span>
-                        </div>
-                        <ul class="rec-list" id="recommendationList">
-                            <li><span class="rec-num">1</span> Schedule HVAC maintenance ($250)</li>
-                            <li><span class="rec-num">2</span> Compare insurance rates (save $480/yr)</li>
-                            <li><span class="rec-num">3</span> Clean gutters before winter ($120)</li>
-                            <li><span class="rec-num">4</span> Request mortgage refinance quote</li>
-                            <li><span class="rec-num">5</span> Set aside $200 for maintenance fund</li>
-                        </ul>
-                        <div style="margin-top:14px; background:#eef2ff; padding:10px 18px; border-radius:40px; display:inline-block; font-size:0.85rem;">
-                            <i class="fas fa-robot" style="color:#3b82f6;"></i> AI generated · Estimated savings: $480/yr
-                        </div>
-                    </div>
-
-                    <!-- Charts: Monthly Expenses -->
+                    <!-- Charts -->
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fas fa-chart-pie"></i> Monthly Expenses</h3>
-                            <span class="badge-status badge-purple">$3,240 total</span>
+                            <span class="badge-status badge-purple">$3,560 total</span>
                         </div>
                         <div class="chart-container">
                             <canvas id="expenseChart"></canvas>
                         </div>
-                        <div style="display:flex; justify-content:space-around; margin-top:12px; font-size:0.8rem;">
-                            <span><span style="background:#3b82f6; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Mortgage 79%</span>
+                        <div style="display:flex; justify-content:space-around; margin-top:12px; font-size:0.8rem; flex-wrap:wrap; gap:8px;">
+                            <span><span style="background:#3b82f6; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Mortgage 72%</span>
                             <span><span style="background:#eab308; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Insurance 6%</span>
-                            <span><span style="background:#22c55e; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Tax 15%</span>
+                            <span><span style="background:#22c55e; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Tax 13%</span>
+                            <span><span style="background:#8b5cf6; display:inline-block; width:12px; height:12px; border-radius:4px;"></span> Utilities 9%</span>
                         </div>
                     </div>
 
-                    <!-- Charts: Home Value Trends -->
+                    <!-- Home Value Trend -->
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fas fa-chart-line"></i> Home Value Trends</h3>
@@ -619,7 +776,8 @@
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:0.8rem; color:#64748b;">
                             <span>Current: $485,000</span>
-                            <span>Projected: $510,000 (2027)</span>
+                            <span>Projected 2027: $515,000</span>
+                            <span>ROI: +6.2%</span>
                         </div>
                     </div>
 
@@ -627,12 +785,43 @@
                     <div class="card">
                         <div class="card-header">
                             <h3><i class="fas fa-piggy-bank"></i> Savings Opportunities</h3>
-                            <span class="badge-status badge-green">$480/yr</span>
+                            <span class="badge-status badge-green">$1,340/yr</span>
                         </div>
                         <div class="row"><span class="label">🏷️ Insurance comparison</span><span class="highlight" style="color:#16a34a;">Save $480/year</span></div>
                         <div class="row"><span class="label">📈 Mortgage refinance</span><span class="highlight" style="color:#16a34a;">Save $540/year</span></div>
                         <div class="row"><span class="label">💡 Energy efficiency</span><span class="highlight" style="color:#16a34a;">Save $200/year</span></div>
-                        <div class="row"><span class="label">📊 Total potential</span><span class="highlight" style="color:#16a34a; font-size:1.2rem;">$1,220/year</span></div>
+                        <div class="row"><span class="label">🔧 Maintenance optimization</span><span class="highlight" style="color:#16a34a;">Save $120/year</span></div>
+                        <div class="row" style="border-top: 2px solid #e2e8f0; margin-top:4px; padding-top:16px;">
+                            <span class="label" style="font-weight:700;">📊 Total potential</span>
+                            <span class="highlight" style="color:#16a34a; font-size:1.2rem; font-weight:700;">$1,340/year</span>
+                        </div>
+                    </div>
+
+                    <!-- Reminders System -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bell"></i> My Reminders</h3>
+                            <span class="badge-status badge-blue" id="reminderCount">0 reminders</span>
+                        </div>
+                        <div id="reminderList">
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-plus"></i>
+                                <p>No reminders yet. Add one below!</p>
+                            </div>
+                        </div>
+
+                        <!-- Add Reminder Form -->
+                        <div class="add-reminder-form">
+                            <input type="text" id="reminderTitle" placeholder="Reminder title" />
+                            <input type="datetime-local" id="reminderDateTime" />
+                            <select id="reminderPriority">
+                                <option value="high">🔴 High</option>
+                                <option value="medium" selected>🟡 Medium</option>
+                                <option value="low">🟢 Low</option>
+                            </select>
+                            <textarea id="reminderDescription" placeholder="Description (optional)"></textarea>
+                            <button id="addReminderBtn"><i class="fas fa-plus"></i> Add Reminder</button>
+                        </div>
                     </div>
 
                     <!-- Admin Panel -->
@@ -657,19 +846,25 @@
 
             <div class="footer">
                 <span><i class="fas fa-database"></i> Supabase · <span id="dbStatus" style="color:#22c55e;">✅ connected</span></span>
-                <span><i class="fas fa-chart-simple"></i> Realistic data · Charts powered by Chart.js</span>
-                <span><i class="fas fa-home"></i> MVP: Profile → Expenses → Calendar → AI → Reminders</span>
+                <span><i class="fas fa-chart-simple"></i> Realistic calculations · Charts.js</span>
+                <span><i class="fas fa-bell"></i> Reminders with date & time</span>
             </div>
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle" style="color:#22c55e; margin-right:10px;"></i>
+        <span id="toastMessage">Action completed!</span>
+    </div>
+
     <script>
         // ================================================================
-        //  SUPABASE CONFIG
+        //  SUPABASE CONFIG (optional)
         // ================================================================
-        const SUPABASE_URL = 'https://your-project.supabase.co'; // ← replace
-        const SUPABASE_ANON_KEY = 'your-anon-key'; // ← replace
-        const USE_SUPABASE = false; // set to true after replacing
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_ANON_KEY = 'your-anon-key';
+        const USE_SUPABASE = false;
 
         let supabase = null;
         if (USE_SUPABASE && !SUPABASE_URL.includes('your-project')) {
@@ -680,18 +875,20 @@
         //  STATE
         // ================================================================
         let currentUser = null;
+        let reminders = [];
+        let reminderIdCounter = 1;
+
         let profile = {
             location: 'Austin, TX',
             value: 485000,
             mortgage: 2550,
             insurance: 210,
             tax: 480,
+            utilities: 320,
             health: 87
         };
 
-        // Chart instances
-        let expenseChartInstance = null;
-        let valueTrendChartInstance = null;
+        let chartInstances = {};
 
         // ================================================================
         //  DOM REFS
@@ -711,6 +908,7 @@
         const mortgageDisplay = document.getElementById('mortgageDisplay');
         const insuranceDisplay = document.getElementById('insuranceDisplay');
         const taxDisplay = document.getElementById('taxDisplay');
+        const utilitiesDisplay = document.getElementById('utilitiesDisplay');
         const monthlyCostDisplay = document.getElementById('monthlyCostDisplay');
         const healthDisplay = document.getElementById('healthDisplay');
 
@@ -719,12 +917,20 @@
         const mortgageInput = document.getElementById('mortgageInput');
         const insuranceInput = document.getElementById('insuranceInput');
         const updateBtn = document.getElementById('updateProfileBtn');
-        const recList = document.getElementById('recommendationList');
 
         const statHomeValue = document.getElementById('statHomeValue');
         const statMonthlyCost = document.getElementById('statMonthlyCost');
         const statSavings = document.getElementById('statSavings');
         const statHealth = document.getElementById('statHealth');
+        const statTasks = document.getElementById('statTasks');
+
+        const reminderList = document.getElementById('reminderList');
+        const reminderCount = document.getElementById('reminderCount');
+        const reminderTitle = document.getElementById('reminderTitle');
+        const reminderDateTime = document.getElementById('reminderDateTime');
+        const reminderPriority = document.getElementById('reminderPriority');
+        const reminderDescription = document.getElementById('reminderDescription');
+        const addReminderBtn = document.getElementById('addReminderBtn');
 
         const adminPanel = document.getElementById('adminPanel');
         const totalUsersDisplay = document.getElementById('totalUsersDisplay');
@@ -734,44 +940,246 @@
         const avgHealthScore = document.getElementById('avgHealthScore');
 
         const dbStatus = document.getElementById('dbStatus');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // ================================================================
+        //  TOAST
+        // ================================================================
+        function showToast(message, isError = false) {
+            toastMessage.textContent = message;
+            toast.style.borderLeft = isError ? '4px solid #ef4444' : '4px solid #22c55e';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ================================================================
+        //  REMINDER FUNCTIONS
+        // ================================================================
+        function renderReminders() {
+            if (reminders.length === 0) {
+                reminderList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-plus"></i>
+                            <p>No reminders yet. Add one below!</p>
+                        </div>
+                    `;
+                reminderCount.textContent = '0 reminders';
+                return;
+            }
+
+            // Sort by date (soonest first)
+            const sorted = [...reminders].sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+
+            let html = '';
+            let activeCount = 0;
+            sorted.forEach(reminder => {
+                if (!reminder.completed) activeCount++;
+                const isCompleted = reminder.completed || false;
+                const priorityClass = reminder.priority === 'high' ? 'priority-high' :
+                    reminder.priority === 'medium' ? 'priority-medium' : 'priority-low';
+                const priorityLabel = reminder.priority === 'high' ? '🔴' :
+                    reminder.priority === 'medium' ? '🟡' : '🟢';
+
+                const dateObj = new Date(reminder.dateTime);
+                const formattedDate = dateObj.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+                const formattedTime = dateObj.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                html += `
+                        <div class="reminder-item ${isCompleted ? 'reminder-completed' : ''}">
+                            <div class="reminder-info">
+                                <div class="reminder-title">${reminder.title}</div>
+                                <div class="reminder-meta">
+                                    ${formattedDate} at ${formattedTime}
+                                    ${reminder.description ? '· ' + reminder.description : ''}
+                                    <span class="reminder-priority ${priorityClass}">${priorityLabel} ${reminder.priority}</span>
+                                </div>
+                            </div>
+                            <div class="reminder-actions">
+                                ${!isCompleted ? `<button class="complete-btn" data-id="${reminder.id}"><i class="fas fa-check-circle"></i></button>` : ''}
+                                <button class="delete-btn" data-id="${reminder.id}"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </div>
+                    `;
+            });
+
+            reminderList.innerHTML = html;
+            reminderCount.textContent = `${activeCount} active · ${reminders.length} total`;
+
+            // Event listeners for complete/delete buttons
+            document.querySelectorAll('.complete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.dataset.id);
+                    completeReminder(id);
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.dataset.id);
+                    deleteReminder(id);
+                });
+            });
+
+            // Update task count
+            statTasks.textContent = activeCount;
+        }
+
+        function addReminder(title, dateTime, priority, description) {
+            const newReminder = {
+                id: reminderIdCounter++,
+                title: title,
+                dateTime: dateTime,
+                priority: priority || 'medium',
+                description: description || '',
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+            reminders.push(newReminder);
+            renderReminders();
+            showToast('✅ Reminder added successfully!');
+            saveRemindersToLocal();
+        }
+
+        function completeReminder(id) {
+            const reminder = reminders.find(r => r.id === id);
+            if (reminder) {
+                reminder.completed = true;
+                renderReminders();
+                showToast('✅ Reminder completed!');
+                saveRemindersToLocal();
+            }
+        }
+
+        function deleteReminder(id) {
+            reminders = reminders.filter(r => r.id !== id);
+            renderReminders();
+            showToast('🗑️ Reminder deleted');
+            saveRemindersToLocal();
+        }
+
+        // ================================================================
+        //  REMINDER LOCAL STORAGE
+        // ================================================================
+        function saveRemindersToLocal() {
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            localStorage.setItem('reminderIdCounter', reminderIdCounter.toString());
+        }
+
+        function loadRemindersFromLocal() {
+            const stored = localStorage.getItem('reminders');
+            const storedCounter = localStorage.getItem('reminderIdCounter');
+            if (stored) {
+                try {
+                    reminders = JSON.parse(stored);
+                    if (storedCounter) {
+                        reminderIdCounter = parseInt(storedCounter);
+                    }
+                } catch (e) {}
+            }
+            // If no reminders, add sample data
+            if (reminders.length === 0) {
+                const now = new Date();
+                reminders = [{
+                    id: reminderIdCounter++,
+                    title: 'Insurance Renewal',
+                    dateTime: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 12, 9, 0)
+                        .toISOString(),
+                    priority: 'high',
+                    description: 'Review and renew home insurance policy',
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                }, {
+                    id: reminderIdCounter++,
+                    title: 'HVAC Maintenance',
+                    dateTime: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 5, 14, 30)
+                        .toISOString(),
+                    priority: 'high',
+                    description: 'Schedule annual HVAC service',
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                }, {
+                    id: reminderIdCounter++,
+                    title: 'Property Tax Payment',
+                    dateTime: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 15, 10, 0)
+                        .toISOString(),
+                    priority: 'medium',
+                    description: 'Pay annual property tax bill',
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                }, {
+                    id: reminderIdCounter++,
+                    title: 'Gutter Cleaning',
+                    dateTime: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 8, 8, 0)
+                        .toISOString(),
+                    priority: 'medium',
+                    description: 'Clean gutters before winter',
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                }, {
+                    id: reminderIdCounter++,
+                    title: 'Lawn Winter Prep',
+                    dateTime: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3, 16, 0)
+                        .toISOString(),
+                    priority: 'low',
+                    description: 'Prepare lawn for winter',
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                }];
+                saveRemindersToLocal();
+            }
+            renderReminders();
+        }
 
         // ================================================================
         //  RENDER FUNCTIONS
         // ================================================================
         function renderProfile() {
-            const monthly = profile.mortgage + profile.insurance + profile.tax;
+            const monthly = profile.mortgage + profile.insurance + profile.tax + profile.utilities;
             locationDisplay.textContent = profile.location;
             valueDisplay.textContent = `$${profile.value.toLocaleString()}`;
             mortgageDisplay.textContent = `$${profile.mortgage.toLocaleString()}`;
             insuranceDisplay.textContent = `$${profile.insurance.toLocaleString()}`;
             taxDisplay.textContent = `$${profile.tax.toLocaleString()}`;
+            utilitiesDisplay.textContent = `$${profile.utilities.toLocaleString()}`;
             monthlyCostDisplay.textContent = `$${monthly.toLocaleString()}`;
             healthDisplay.innerHTML = `${profile.health}/100 <i class="fas fa-heartbeat" style="color:#22c55e;"></i>`;
 
-            // Stats
             statHomeValue.textContent = `$${profile.value.toLocaleString()}`;
             statMonthlyCost.textContent = `$${monthly.toLocaleString()}`;
-            statSavings.textContent = `$${Math.round(profile.insurance * 2.2)}`;
+            statSavings.textContent = `$${Math.round(profile.insurance * 2.2 + profile.utilities * 0.3)}`;
             statHealth.textContent = profile.health;
 
             locationInput.value = profile.location;
             valueInput.value = profile.value;
             mortgageInput.value = profile.mortgage;
             insuranceInput.value = profile.insurance;
+
+            updateCharts();
         }
 
         function updateRecommendations() {
-            let recs = [
-                'Schedule HVAC maintenance ($250)',
-                'Compare insurance rates (save $480/yr)',
-                'Clean gutters before winter ($120)',
-                'Request mortgage refinance quote',
-                'Set aside $200 for maintenance fund'
+            const savings = Math.round(profile.insurance * 2.2 + profile.utilities * 0.3 + profile.mortgage * 0.02 * 12);
+            const recs = [
+                `Schedule HVAC maintenance ($250) · Save $120/yr`,
+                `Compare insurance rates · Save $${Math.round(profile.insurance * 2.2)}/yr`,
+                `Clean gutters before winter ($120)`,
+                `Request mortgage refinance quote · Save $${Math.round(profile.mortgage * 0.02 * 12)}/yr`,
+                `Install smart thermostat · Save $200/yr`
             ];
             if (profile.insurance > 200) recs.splice(1, 0, 'Shop for cheaper insurance');
             if (profile.mortgage > 2500) recs.splice(3, 0, 'Consider mortgage refinance');
             while (recs.length > 5) recs.pop();
-            recList.innerHTML = recs.map((text, idx) =>
+
+            const list = document.getElementById('recommendationList');
+            list.innerHTML = recs.map((text, idx) =>
                 `<li><span class="rec-num">${idx+1}</span> ${text}</li>`
             ).join('');
         }
@@ -795,16 +1203,16 @@
         //  CHARTS
         // ================================================================
         function initCharts() {
-            // Expense Chart (Pie)
+            // Expense Chart
             const ctx1 = document.getElementById('expenseChart').getContext('2d');
-            if (expenseChartInstance) expenseChartInstance.destroy();
-            expenseChartInstance = new Chart(ctx1, {
+            if (chartInstances.expense) chartInstances.expense.destroy();
+            chartInstances.expense = new Chart(ctx1, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Mortgage', 'Insurance', 'Property Tax'],
+                    labels: ['Mortgage', 'Insurance', 'Property Tax', 'Utilities'],
                     datasets: [{
-                        data: [profile.mortgage, profile.insurance, profile.tax],
-                        backgroundColor: ['#3b82f6', '#eab308', '#22c55e'],
+                        data: [profile.mortgage, profile.insurance, profile.tax, profile.utilities],
+                        backgroundColor: ['#3b82f6', '#eab308', '#22c55e', '#8b5cf6'],
                         borderWidth: 2,
                         borderColor: '#fff'
                     }]
@@ -812,21 +1220,17 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     cutout: '65%'
                 }
             });
 
-            // Value Trend Chart (Line)
+            // Value Trend Chart
             const ctx2 = document.getElementById('valueTrendChart').getContext('2d');
-            if (valueTrendChartInstance) valueTrendChartInstance.destroy();
+            if (chartInstances.value) chartInstances.value.destroy();
             const years = ['2020', '2021', '2022', '2023', '2024', '2025', '2026'];
             const values = [350000, 375000, 410000, 430000, 455000, 470000, profile.value];
-            valueTrendChartInstance = new Chart(ctx2, {
+            chartInstances.value = new Chart(ctx2, {
                 type: 'line',
                 data: {
                     labels: years,
@@ -846,19 +1250,11 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
                         y: {
                             beginAtZero: false,
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + (value / 1000) + 'k';
-                                }
-                            }
+                            ticks: { callback: function(value) { return '$' + (value / 1000) + 'k'; } }
                         }
                     }
                 }
@@ -866,14 +1262,16 @@
         }
 
         function updateCharts() {
-            if (expenseChartInstance) {
-                expenseChartInstance.data.datasets[0].data = [profile.mortgage, profile.insurance, profile.tax];
-                expenseChartInstance.update();
+            if (chartInstances.expense) {
+                chartInstances.expense.data.datasets[0].data = [profile.mortgage, profile.insurance, profile.tax, profile
+                    .utilities
+                ];
+                chartInstances.expense.update();
             }
-            if (valueTrendChartInstance) {
-                const data = valueTrendChartInstance.data.datasets[0].data;
+            if (chartInstances.value) {
+                const data = chartInstances.value.data.datasets[0].data;
                 data[data.length - 1] = profile.value;
-                valueTrendChartInstance.update();
+                chartInstances.value.update();
             }
         }
 
@@ -925,10 +1323,18 @@
             authContainer.style.display = 'none';
             dashboard.classList.add('active');
             loadFromLocal();
+            loadRemindersFromLocal();
             renderProfile();
             updateRecommendations();
             renderAdminPanel();
             initCharts();
+
+            // Set default datetime for reminder form
+            const now = new Date();
+            const localDatetime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            reminderDateTime.value = localDatetime;
 
             if (supabase) {
                 dbStatus.textContent = '✅ Supabase connected';
@@ -937,6 +1343,8 @@
                 dbStatus.textContent = '⚡ Local mode (configure Supabase)';
                 dbStatus.style.color = '#eab308';
             }
+
+            showToast('👋 Welcome back, ' + user.email.split('@')[0] + '!');
         }
 
         function logout() {
@@ -946,6 +1354,7 @@
             authError.classList.remove('show');
             loginEmail.value = 'client@home.com';
             loginPassword.value = 'client123';
+            showToast('👋 Logged out successfully');
         }
 
         // ================================================================
@@ -973,22 +1382,20 @@
             const val = parseFloat(valueInput.value) || 485000;
             const mort = parseFloat(mortgageInput.value) || 2550;
             const ins = parseFloat(insuranceInput.value) || 210;
+
             profile.location = loc;
             profile.value = val;
             profile.mortgage = mort;
             profile.insurance = ins;
-            profile.tax = Math.round(val * 0.012 / 12); // 1.2% property tax annually
-            profile.health = Math.min(100, Math.round(80 + (val - 300000) / 50000 + (ins < 200 ? 5 : 0)));
+            profile.tax = Math.round(val * 0.012 / 12); // 1.2% property tax
+            profile.utilities = Math.round(320 + (val - 400000) * 0.0003);
+            profile.health = Math.min(100, Math.round(80 + (val - 300000) / 50000 + (ins < 200 ? 5 : 0) - (profile
+            .utilities > 400 ? 3 : 0)));
 
             renderProfile();
             updateRecommendations();
-            updateCharts();
             saveToLocal();
-
-            const btn = updateBtn;
-            const orig = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-            setTimeout(() => btn.innerHTML = orig, 1200);
+            showToast('✅ Profile updated successfully!');
         }
 
         // ================================================================
@@ -1011,6 +1418,39 @@
             inp.addEventListener('keypress', (e) => { if (e.key === 'Enter') updateProfile(); });
         });
 
+        // Add Reminder
+        addReminderBtn.addEventListener('click', () => {
+            const title = reminderTitle.value.trim();
+            const dateTime = reminderDateTime.value;
+            const priority = reminderPriority.value;
+            const description = reminderDescription.value.trim();
+
+            if (!title) {
+                showToast('⚠️ Please enter a reminder title', true);
+                return;
+            }
+            if (!dateTime) {
+                showToast('⚠️ Please select a date and time', true);
+                return;
+            }
+
+            addReminder(title, dateTime, priority, description);
+            reminderTitle.value = '';
+            reminderDescription.value = '';
+            const now = new Date();
+            const localDatetime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            reminderDateTime.value = localDatetime;
+        });
+
+        // Enter key for reminder title
+        reminderTitle.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addReminderBtn.click();
+            }
+        });
+
         // ================================================================
         //  INIT
         // ================================================================
@@ -1018,12 +1458,13 @@
         dashboard.classList.remove('active');
         loadFromLocal();
 
-        console.log('🏠 AI Homeowner Assistant · Realistic Dashboard');
+        console.log('🏠 AI Homeowner Assistant · Advanced Realistic');
         console.log('📊 Charts powered by Chart.js');
+        console.log('⏰ Reminders with date & time');
         console.log('👤 Login: client@home.com / client123  |  admin@home.com / admin123');
 
-        // Auto-login for demo (optional - comment out for production)
-        // setTimeout(() => login('client@home.com', 'client123'), 500);
+        // Auto-login for demo (remove for production)
+        // setTimeout(() => login('client@home.com', 'client123'), 300);
     </script>
 </body>
 </html>
