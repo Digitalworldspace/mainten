@@ -8,8 +8,8 @@
  *    supabase/schema.sql, not by hiding this key.
  * ------------------------------------------------------------------
  */
-const SUPABASE_URL = "https://YOUR-PROJECT-REF.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR-ANON-PUBLIC-KEY";
+const SUPABASE_URL = "https://vpnvhyxqfcnzkydgsokh.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwbnZoeXhxZmNuemt5ZGdzb2toIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2NjA0MTcsImV4cCI6MjEwNDIzNjQxN30.1krHp3-cc7i54XTrHRwKOsaE48jRRitW3JBvtcWoMZ4";
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
